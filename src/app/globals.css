@@ -1,0 +1,318 @@
+@import "tailwindcss";
+
+@theme {
+  /* Light mode */
+  --color-background: oklch(0.99 0 0);
+  --color-foreground: oklch(0.13 0.007 285);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.13 0.007 285);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.13 0.007 285);
+  --color-primary: oklch(0.21 0.006 285.885);
+  --color-primary-foreground: oklch(0.985 0 0);
+  --color-secondary: oklch(0.96 0.003 286);
+  --color-secondary-foreground: oklch(0.21 0.006 285.885);
+  --color-muted: oklch(0.96 0.003 286);
+  --color-muted-foreground: oklch(0.52 0.018 286);
+  --color-accent: oklch(0.96 0.003 286);
+  --color-accent-foreground: oklch(0.21 0.006 285.885);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-border: oklch(0.91 0.005 286);
+  --color-input: oklch(0.91 0.005 286);
+  --color-ring: oklch(0.21 0.006 285.885);
+
+  /* Brand */
+  --color-brand: oklch(0.55 0.22 260);
+  --color-brand-foreground: oklch(1 0 0);
+  --color-brand-muted: oklch(0.93 0.06 260);
+
+  /* Category colors */
+  --color-cat-tech: oklch(0.55 0.22 260);
+  --color-cat-celebs: oklch(0.60 0.22 340);
+  --color-cat-viral: oklch(0.62 0.22 35);
+  --color-cat-finance: oklch(0.52 0.18 145);
+  --color-cat-health: oklch(0.58 0.20 160);
+  --color-cat-travel: oklch(0.58 0.18 210);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Dark mode overrides */
+.dark {
+  --color-background: oklch(0.09 0.005 285);
+  --color-foreground: oklch(0.97 0.002 285);
+  --color-card: oklch(0.13 0.006 285);
+  --color-card-foreground: oklch(0.97 0.002 285);
+  --color-popover: oklch(0.13 0.006 285);
+  --color-popover-foreground: oklch(0.97 0.002 285);
+  --color-primary: oklch(0.92 0.002 285);
+  --color-primary-foreground: oklch(0.13 0.006 285);
+  --color-secondary: oklch(0.18 0.006 285);
+  --color-secondary-foreground: oklch(0.92 0.002 285);
+  --color-muted: oklch(0.18 0.006 285);
+  --color-muted-foreground: oklch(0.62 0.015 285);
+  --color-accent: oklch(0.18 0.006 285);
+  --color-accent-foreground: oklch(0.92 0.002 285);
+  --color-destructive: oklch(0.65 0.22 27);
+  --color-border: oklch(0.22 0.006 285);
+  --color-input: oklch(0.22 0.006 285);
+  --color-ring: oklch(0.85 0.002 285);
+  --color-brand-muted: oklch(0.22 0.08 260);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    transition: background-color 0.2s, color 0.2s;
+  }
+  ::selection {
+    background-color: var(--color-brand);
+    color: white;
+  }
+}
+
+@layer utilities {
+  /* Category accent helpers */
+  .cat-tech    { --cat-color: var(--color-cat-tech); }
+  .cat-celebs  { --cat-color: var(--color-cat-celebs); }
+  .cat-viral   { --cat-color: var(--color-cat-viral); }
+  .cat-finance { --cat-color: var(--color-cat-finance); }
+  .cat-health  { --cat-color: var(--color-cat-health); }
+  .cat-travel  { --cat-color: var(--color-cat-travel); }
+
+  .cat-badge {
+    background-color: color-mix(in oklch, var(--cat-color) 15%, transparent);
+    color: var(--cat-color);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    display: inline-block;
+  }
+
+  /* Prose content — rich article typography */
+  .prose-content {
+    font-size: 1.0625rem;
+    line-height: 1.85;
+    color: var(--color-foreground);
+  }
+  .prose-content h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-foreground);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .prose-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-foreground);
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid color-mix(in oklch, var(--color-brand) 30%, transparent);
+    letter-spacing: -0.01em;
+  }
+  .prose-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-brand);
+  }
+  .prose-content h4 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.4rem;
+    color: var(--color-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.85rem;
+  }
+  .prose-content p {
+    margin-bottom: 1.25rem;
+    line-height: 1.85;
+    color: var(--color-foreground);
+  }
+  .prose-content ul, .prose-content ol {
+    padding-left: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .prose-content ul { list-style-type: disc; }
+  .prose-content ol { list-style-type: decimal; }
+  .prose-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.75;
+    color: var(--color-foreground);
+  }
+  .prose-content a {
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    font-weight: 500;
+    transition: opacity 0.15s;
+  }
+  .prose-content a:hover { opacity: 0.75; }
+  .prose-content blockquote {
+    border-left: 4px solid var(--color-brand);
+    padding: 0.75rem 1.25rem;
+    margin: 1.75rem 0;
+    background: color-mix(in oklch, var(--color-brand) 6%, transparent);
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-style: italic;
+    color: var(--color-muted-foreground);
+    font-size: 1.05rem;
+  }
+  .prose-content blockquote p { margin-bottom: 0; }
+  .prose-content strong {
+    font-weight: 700;
+    color: var(--color-foreground);
+  }
+  .prose-content em { font-style: italic; }
+  .prose-content code {
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 0.875em;
+    background: color-mix(in oklch, var(--color-brand) 10%, var(--color-muted));
+    color: var(--color-brand);
+    padding: 0.15em 0.4em;
+    border-radius: 0.3rem;
+  }
+  .prose-content pre {
+    background: var(--color-foreground);
+    color: var(--color-background);
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .prose-content pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+  .prose-content hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, var(--color-brand), transparent);
+    margin: 2rem 0;
+    border-radius: 1px;
+  }
+  .prose-content img {
+    border-radius: 0.75rem;
+    margin: 1.5rem auto;
+    display: block;
+    max-width: 100%;
+    box-shadow: 0 4px 20px color-mix(in oklch, var(--color-foreground) 10%, transparent);
+  }
+  .prose-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+  .prose-content th {
+    background: var(--color-brand);
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    text-align: left;
+  }
+  .prose-content td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-foreground);
+  }
+  .prose-content tr:nth-child(even) td {
+    background: color-mix(in oklch, var(--color-muted) 50%, transparent);
+  }
+  /* First paragraph lead style */
+  .prose-content > p:first-of-type {
+    font-size: 1.125rem;
+    color: var(--color-foreground);
+    font-weight: 400;
+  }
+
+  /* Card hover lift */
+  .card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px color-mix(in oklch, var(--color-foreground) 8%, transparent);
+  }
+
+  /* Gradient image fallback */
+  .img-fallback {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--cat-color, var(--color-brand)) 20%, var(--color-muted)),
+      color-mix(in oklch, var(--cat-color, var(--color-brand)) 40%, var(--color-muted))
+    );
+  }
+
+  /* Trending ticker animation */
+  @keyframes ticker {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-ticker {
+    animation: ticker 30s linear infinite;
+  }
+  .animate-ticker:hover {
+    animation-play-state: paused;
+  }
+
+  /* Reading progress bar */
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--color-brand);
+    z-index: 9999;
+    transition: width 0.1s linear;
+  }
+
+  /* Fade in */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease forwards;
+  }
+
+  /* Skeleton shimmer */
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg,
+      var(--color-muted) 25%,
+      color-mix(in oklch, var(--color-muted) 60%, transparent) 50%,
+      var(--color-muted) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-md);
+  }
+}
