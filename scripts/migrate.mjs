@@ -18,7 +18,14 @@ async function runMigrations() {
   }
 }
 
+// PostgreSQL "already exists" error codes — schema is already in the desired state
+const ALREADY_EXISTS_CODES = new Set(["42710", "42P07", "42701", "42P16"]);
+
 runMigrations().catch((err) => {
+  if (ALREADY_EXISTS_CODES.has(err?.code)) {
+    console.warn("Migration skipped — schema already exists:", err.message);
+    process.exit(0);
+  }
   console.error("Migration failed:", err);
   process.exit(1);
 });
