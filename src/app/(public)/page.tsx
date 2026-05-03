@@ -71,14 +71,8 @@ export default async function HomePage() {
           </div>
           <h1 className="text-4xl font-black tracking-tight">Coming Soon</h1>
           <p className="text-muted-foreground text-lg">
-            We&apos;re cooking up fresh content. Visit the admin panel to sync RSS feeds and generate your first articles.
+            We&apos;re cooking up fresh content. Check back soon for the latest trending news and updates.
           </p>
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-2 bg-brand text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity text-sm uppercase tracking-wide"
-          >
-            Open Admin Panel
-          </Link>
         </div>
       </div>
     );

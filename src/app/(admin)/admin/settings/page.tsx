@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { settings } from "@/lib/db/schema";
 import { SettingsForm } from "@/components/admin/SettingsForm";
+import { ChangePasswordForm } from "@/components/admin/ChangePasswordForm";
 
 export const metadata = { title: "Settings" };
 
@@ -9,8 +10,9 @@ export default async function SettingsPage() {
   const settingsMap = Object.fromEntries(allSettings.map((s) => [s.key, s.value]));
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Settings</h1>
+    <div className="space-y-8">
+      <h1 className="text-2xl font-bold">Settings</h1>
+      <ChangePasswordForm />
       <SettingsForm settings={settingsMap} />
     </div>
   );
