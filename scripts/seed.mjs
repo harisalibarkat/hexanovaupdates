@@ -29,6 +29,9 @@ const DEFAULT_SETTINGS = [
   { key: "ai_generation_enabled",    value: "true" },
   { key: "max_posts_per_run",        value: "5" },
   { key: "groq_model",               value: "llama-3.3-70b-versatile" },
+  { key: "seo_optimization_enabled", value: "false" },
+  { key: "seo_batch_size",           value: "3" },
+  { key: "seo_cooldown_days",        value: "7" },
 ];
 
 async function seed() {

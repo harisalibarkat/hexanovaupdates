@@ -78,6 +78,35 @@ export function SettingsForm({ settings }: Props) {
         </p>
       </Section>
 
+      {/* SEO Optimization */}
+      <Section title="SEO Auto-Optimization">
+        <Toggle
+          name="seo_optimization_enabled"
+          label="Enable background SEO optimization (cron job)"
+          defaultChecked={settings.seo_optimization_enabled === "true"}
+        />
+        <p className="text-xs text-muted-foreground -mt-1">
+          When enabled, the cron job will automatically re-optimize published articles based on the limits below. Uses Groq API credits.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field
+            name="seo_batch_size"
+            label="Articles per cron run"
+            defaultValue={settings.seo_batch_size ?? "3"}
+            type="number"
+          />
+          <Field
+            name="seo_cooldown_days"
+            label="Re-optimize cooldown (days)"
+            defaultValue={settings.seo_cooldown_days ?? "7"}
+            type="number"
+          />
+        </div>
+        <p className="text-xs text-muted-foreground -mt-2">
+          Cooldown prevents re-optimizing the same article within N days. Go to <a href="/admin/seo" className="text-brand hover:underline">Admin → SEO Optimizer</a> to run manual optimization.
+        </p>
+      </Section>
+
       {/* Automation */}
       <Section title="Automation">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

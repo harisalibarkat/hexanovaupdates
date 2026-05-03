@@ -132,6 +132,7 @@ export const posts = pgTable(
     structuredData: jsonb("structured_data"),
     scheduledAt: timestamp("scheduled_at"),
     publishedAt: timestamp("published_at"),
+    seoOptimizedAt: timestamp("seo_optimized_at"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

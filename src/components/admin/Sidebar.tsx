@@ -12,6 +12,7 @@ const navItems = [
   { href: "/admin/comments", label: "Comments", icon: "💬" },
   { href: "/admin/newsletter", label: "Newsletter", icon: "✉️" },
   { href: "/admin/analytics", label: "Analytics", icon: "📈" },
+  { href: "/admin/seo", label: "SEO Optimizer", icon: "🔍" },
   { href: "/admin/sources", label: "RSS Sources", icon: "📡" },
   { href: "/admin/settings", label: "Settings", icon: "⚙️" },
 ];
