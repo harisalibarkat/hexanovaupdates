@@ -5,7 +5,6 @@ import { eq, and, desc } from "drizzle-orm";
 import { CATEGORIES, categoryLabel } from "@/lib/utils";
 import { buildCategoryMetadata } from "@/lib/seo/metadata";
 import { ArticleCard } from "@/components/public/ArticleCard";
-import { CategoryNav } from "@/components/public/CategoryNav";
 import { TrendingBar } from "@/components/public/TrendingBar";
 import type { Metadata } from "next";
 
@@ -92,20 +91,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       {/* Category hero banner */}
       <div className={`bg-gradient-to-b ${bgGrad} border-b border-border/50`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8">
-          {/* Category nav */}
-          <CategoryNav active={category} />
-
-          {/* Category title */}
-          <div className="mt-8">
-            <span className={`cat-label text-xs mb-3 block ${textColor}`}>{emoji} Category</span>
-            <h1 className="section-title text-3xl sm:text-4xl text-foreground">
-              {label} News
-            </h1>
-            <span className={`section-bar ${accent}`} />
-            <p className="text-muted-foreground mt-4 text-sm">
-              Latest trending stories and updates in {label.toLowerCase()}
-            </p>
-          </div>
+          <span className={`cat-label text-xs mb-3 block ${textColor}`}>{emoji} Category</span>
+          <h1 className="section-title text-3xl sm:text-4xl text-foreground">
+            {label} News
+          </h1>
+          <span className={`section-bar ${accent}`} />
+          <p className="text-muted-foreground mt-4 text-sm">
+            Latest trending stories and updates in {label.toLowerCase()}
+          </p>
         </div>
       </div>
 

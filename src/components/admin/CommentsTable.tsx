@@ -20,12 +20,10 @@ interface CommentsTableProps {
 }
 
 const STATUS_BADGE: Record<string, string> = {
-  pending:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-  approved:
-    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  spam: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-  trash: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+  pending:  "bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300",
+  approved: "bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300",
+  spam:     "bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300",
+  trash:    "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300",
 };
 
 function CommentRow({ comment }: { comment: CommentWithPost }) {
@@ -87,7 +85,7 @@ function CommentRow({ comment }: { comment: CommentWithPost }) {
             <button
               onClick={() => startTransition(() => approveComment(comment.id))}
               disabled={isPending}
-              className="text-xs px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 transition-colors disabled:opacity-50"
+              className="text-xs px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-500/20 dark:text-green-300 dark:hover:bg-green-500/30 transition-colors disabled:opacity-50"
             >
               Approve
             </button>
@@ -96,7 +94,7 @@ function CommentRow({ comment }: { comment: CommentWithPost }) {
             <button
               onClick={() => startTransition(() => spamComment(comment.id))}
               disabled={isPending}
-              className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:hover:bg-orange-900/50 transition-colors disabled:opacity-50"
+              className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-500/20 dark:text-orange-300 dark:hover:bg-orange-500/30 transition-colors disabled:opacity-50"
             >
               Spam
             </button>
@@ -105,7 +103,7 @@ function CommentRow({ comment }: { comment: CommentWithPost }) {
             <button
               onClick={() => startTransition(() => trashComment(comment.id))}
               disabled={isPending}
-              className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+              className="text-xs px-2 py-1 rounded bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition-colors disabled:opacity-50"
             >
               Trash
             </button>
@@ -117,7 +115,7 @@ function CommentRow({ comment }: { comment: CommentWithPost }) {
               }
             }}
             disabled={isPending}
-            className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50"
+            className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 transition-colors disabled:opacity-50"
           >
             Delete
           </button>

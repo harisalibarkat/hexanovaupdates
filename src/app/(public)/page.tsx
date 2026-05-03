@@ -35,7 +35,14 @@ const CAT_TICKER: Record<string, string> = {
 };
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ letter?: string }>;
+}) {
+  const { letter } = await searchParams;
+  const activeLetter = letter?.toUpperCase().slice(0, 1) ?? "";
+
   let allPosts: Post[] = [];
   try {
     allPosts = await db.query.posts.findMany({
@@ -46,6 +53,10 @@ export default async function HomePage() {
   } catch {
     allPosts = [];
   }
+
+  const letterPosts = activeLetter
+    ? allPosts.filter((p) => p.title.toUpperCase().startsWith(activeLetter))
+    : [];
 
   if (allPosts.length === 0) {
     return (
@@ -349,19 +360,57 @@ export default async function HomePage() {
             <p className="cat-label text-brand mb-2">Browse</p>
             <h2 className="section-title text-2xl sm:text-3xl mx-auto inline-block">Find Articles by Topic</h2>
             <span className="section-bar mx-auto" />
-            <p className="text-muted-foreground text-sm mt-4">Navigate our content library alphabetically</p>
+            <p className="text-muted-foreground text-sm mt-4">
+              {activeLetter
+                ? `Showing articles starting with "${activeLetter}"`
+                : "Navigate our content library alphabetically"}
+            </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-2">
-            {ALPHABET.map((letter) => (
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {ALPHABET.map((l) => (
               <Link
-                key={letter}
-                href={`/?letter=${letter}`}
-                className="w-10 h-10 flex items-center justify-center border border-border bg-card hover:bg-brand hover:text-white hover:border-brand hover:shadow-md transition-all duration-200 text-sm font-bold text-muted-foreground"
+                key={l}
+                href={activeLetter === l ? "/" : `/?letter=${l}`}
+                className={`w-10 h-10 flex items-center justify-center border transition-all duration-200 text-sm font-bold ${
+                  activeLetter === l
+                    ? "bg-brand text-white border-brand"
+                    : "border-border bg-card hover:bg-brand hover:text-white hover:border-brand text-muted-foreground"
+                }`}
               >
-                {letter}
+                {l}
               </Link>
             ))}
           </div>
+
+          {/* Letter results */}
+          {activeLetter && (
+            <div>
+              {letterPosts.length === 0 ? (
+                <p className="text-center text-muted-foreground text-sm py-8">
+                  No articles found starting with &ldquo;{activeLetter}&rdquo;.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {letterPosts.map((p) => {
+                    const href = `/${p.category}/${p.slug}`;
+                    return (
+                      <article key={p.id} className="flex items-start gap-3 group border border-border bg-card p-4">
+                        <div className="flex-1 min-w-0">
+                          <span className="cat-label text-brand text-[9px] mb-1 block">{categoryLabel(p.category)}</span>
+                          <Link href={href}>
+                            <h3 className="font-bold text-sm leading-snug line-clamp-2 group-hover:text-brand transition-colors">{p.title}</h3>
+                          </Link>
+                          {p.publishedAt && (
+                            <time className="text-xs text-muted-foreground mt-1 block">{formatDate(p.publishedAt)}</time>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
         {/* ── G. Latest + Popular ───────────────────────────────────────── */}

@@ -65,11 +65,11 @@ export function AdminSidebar({ user }: Props) {
 
       <div className="p-4 border-t border-border space-y-2">
         <Link
-          href="/"
+          href="/sitemap.xml"
           target="_blank"
           className="flex items-center gap-2 text-xs text-muted-foreground hover:text-brand transition-colors px-3 py-1.5 rounded-lg hover:bg-muted w-full"
         >
-          🌐 View Public Site
+          🗺️ View Sitemap
         </Link>
         <div className="text-xs text-muted-foreground px-3 truncate">{user?.email}</div>
         <form action={logoutAction}>

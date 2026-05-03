@@ -133,10 +133,10 @@ export async function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 pt-6 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-600">
           <span>© {year} HexaNovaUpdates. All rights reserved.</span>
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-zinc-600 inline-block" />
-            Content generated with AI assistance
-          </span>
+          <div className="flex items-center gap-4">
+            <a href="#" className="hover:text-zinc-400 transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-zinc-400 transition-colors">Terms of Service</a>
+          </div>
         </div>
       </div>
     </footer>
