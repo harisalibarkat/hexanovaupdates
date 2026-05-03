@@ -8,15 +8,6 @@ import type { Post } from "@/lib/db/schema";
 import { SidebarNewsletter } from "@/components/public/SidebarNewsletter";
 import { AdSlot } from "@/components/ads/AdSlot";
 
-const CAT_PILL: Record<string, string> = {
-  tech:    "bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 dark:text-blue-400",
-  celebs:  "bg-pink-500/10 text-pink-600 hover:bg-pink-500/20 dark:text-pink-400",
-  viral:   "bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 dark:text-orange-400",
-  finance: "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-400",
-  health:  "bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:text-green-400",
-  travel:  "bg-cyan-500/10 text-cyan-700 hover:bg-cyan-500/20 dark:text-cyan-400",
-};
-
 interface Props {
   currentPostId: string;
   category: string;
@@ -39,12 +30,12 @@ async function getRecentInCategory(category: string, currentPostId: string): Pro
   }
 }
 
-function SidebarWidget({ title, children }: { title: string; children: React.ReactNode }) {
+function SidebarWidget({ title, accentColor = "bg-brand", children }: { title: string; accentColor?: string; children: React.ReactNode }) {
   return (
-    <div className="bg-card border border-border/70 rounded-2xl overflow-hidden shadow-sm">
-      <div className="px-5 py-4 border-b border-border/60 flex items-center gap-2.5 bg-muted/30">
-        <span className="w-1 h-5 rounded-full bg-brand inline-block flex-shrink-0" />
-        <h3 className="font-bold text-sm tracking-tight">{title}</h3>
+    <div className="bg-card border border-border overflow-hidden">
+      <div className="px-5 pt-5 pb-4 border-b border-border relative">
+        <h3 className="font-serif font-bold text-base text-foreground">{title}</h3>
+        <span className={`absolute bottom-0 left-5 w-10 h-[2px] ${accentColor}`} />
       </div>
       {children}
     </div>
@@ -71,7 +62,7 @@ export async function ArticleSidebar({ currentPostId, category, keywords }: Prop
                 >
                   <Link
                     href={href}
-                    className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-muted"
+                    className="relative flex-shrink-0 w-16 h-16 overflow-hidden bg-muted"
                   >
                     {post.featuredImage ? (
                       <Image
@@ -83,7 +74,7 @@ export async function ArticleSidebar({ currentPostId, category, keywords }: Prop
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-brand/20 to-brand/10 flex items-center justify-center">
-                        <span className="text-lg font-black text-brand/30">
+                        <span className="text-lg font-bold text-brand/30">
                           {categoryLabel(post.category).slice(0, 1)}
                         </span>
                       </div>
@@ -122,7 +113,7 @@ export async function ArticleSidebar({ currentPostId, category, keywords }: Prop
               <Link
                 key={kw}
                 href={`/?tag=${encodeURIComponent(kw)}`}
-                className="inline-block text-xs font-medium px-3 py-1.5 rounded-full bg-muted text-muted-foreground hover:bg-brand hover:text-white transition-all duration-200"
+                className="inline-block text-xs font-medium px-3 py-1.5 border border-border text-muted-foreground hover:border-brand hover:text-brand transition-all duration-200"
               >
                 #{kw}
               </Link>
@@ -133,19 +124,19 @@ export async function ArticleSidebar({ currentPostId, category, keywords }: Prop
 
       {/* Categories */}
       <SidebarWidget title="Browse Categories">
-        <div className="p-5 flex flex-wrap gap-2">
-          {CATEGORIES.map((cat) => {
-            const pillCls = CAT_PILL[cat] ?? "bg-muted text-muted-foreground hover:bg-muted/80";
-            return (
-              <Link
-                key={cat}
-                href={`/${cat}`}
-                className={`inline-block text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-full transition-all duration-200 ${pillCls}`}
-              >
-                {categoryLabel(cat)}
-              </Link>
-            );
-          })}
+        <div className="p-5 space-y-1">
+          {CATEGORIES.map((cat) => (
+            <Link
+              key={cat}
+              href={`/${cat}`}
+              className="flex items-center justify-between py-2 border-b border-border/40 last:border-0 text-sm text-muted-foreground hover:text-brand transition-colors group"
+            >
+              <span className="cat-label text-[10px] group-hover:text-brand">{categoryLabel(cat)}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-30 group-hover:opacity-100 transition-opacity">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </Link>
+          ))}
         </div>
       </SidebarWidget>
     </aside>

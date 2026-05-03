@@ -2,12 +2,12 @@ import Link from "next/link";
 import { CATEGORIES, categoryLabel } from "@/lib/utils";
 
 const CAT_ACTIVE: Record<string, string> = {
-  tech:    "bg-blue-600 text-white shadow-sm shadow-blue-500/40",
-  celebs:  "bg-pink-600 text-white shadow-sm shadow-pink-500/40",
-  viral:   "bg-orange-500 text-white shadow-sm shadow-orange-400/40",
-  finance: "bg-emerald-600 text-white shadow-sm shadow-emerald-500/40",
-  health:  "bg-green-600 text-white shadow-sm shadow-green-500/40",
-  travel:  "bg-cyan-600 text-white shadow-sm shadow-cyan-500/40",
+  tech:    "border-blue-500 text-blue-600 dark:text-blue-400",
+  celebs:  "border-pink-500 text-pink-600 dark:text-pink-400",
+  viral:   "border-orange-500 text-orange-600 dark:text-orange-400",
+  finance: "border-emerald-500 text-emerald-600 dark:text-emerald-400",
+  health:  "border-green-500 text-green-600 dark:text-green-400",
+  travel:  "border-cyan-500 text-cyan-600 dark:text-cyan-400",
 };
 
 interface Props {
@@ -16,13 +16,13 @@ interface Props {
 
 export function CategoryNav({ active }: Props) {
   return (
-    <nav className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    <nav className="flex gap-0 overflow-x-auto scrollbar-hide border-b border-border/40">
       <Link
         href="/"
-        className={`whitespace-nowrap text-sm font-bold px-4 py-2 rounded-full transition-all duration-200 flex-shrink-0 ${
+        className={`whitespace-nowrap cat-label px-4 py-2.5 border-b-2 transition-colors flex-shrink-0 ${
           active === ""
-            ? "bg-foreground text-background shadow-sm"
-            : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+            ? "border-foreground text-foreground"
+            : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
         }`}
       >
         All
@@ -31,10 +31,10 @@ export function CategoryNav({ active }: Props) {
         <Link
           key={cat}
           href={`/${cat}`}
-          className={`whitespace-nowrap text-sm font-bold px-4 py-2 rounded-full transition-all duration-200 flex-shrink-0 ${
+          className={`whitespace-nowrap cat-label px-4 py-2.5 border-b-2 transition-colors flex-shrink-0 ${
             cat === active
-              ? (CAT_ACTIVE[cat] ?? "bg-brand text-white shadow-sm")
-              : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+              ? (CAT_ACTIVE[cat] ?? "border-brand text-foreground")
+              : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
           }`}
         >
           {categoryLabel(cat)}

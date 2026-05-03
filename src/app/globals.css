@@ -1,131 +1,243 @@
 @import "tailwindcss";
 
 @theme {
-  /* Light mode */
-  --color-background: oklch(0.99 0 0);
-  --color-foreground: oklch(0.13 0.007 285);
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.13 0.007 285);
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.13 0.007 285);
-  --color-primary: oklch(0.21 0.006 285.885);
-  --color-primary-foreground: oklch(0.985 0 0);
-  --color-secondary: oklch(0.96 0.003 286);
-  --color-secondary-foreground: oklch(0.21 0.006 285.885);
-  --color-muted: oklch(0.96 0.003 286);
-  --color-muted-foreground: oklch(0.52 0.018 286);
-  --color-accent: oklch(0.96 0.003 286);
-  --color-accent-foreground: oklch(0.21 0.006 285.885);
-  --color-destructive: oklch(0.577 0.245 27.325);
-  --color-border: oklch(0.91 0.005 286);
-  --color-input: oklch(0.91 0.005 286);
-  --color-ring: oklch(0.21 0.006 285.885);
+  /* ── Light mode ─────────────────────────────────────── */
+  --color-background:          #ffffff;
+  --color-foreground:          #111111;
+  --color-card:                #ffffff;
+  --color-card-foreground:     #111111;
+  --color-popover:             #ffffff;
+  --color-popover-foreground:  #111111;
+  --color-primary:             #1a1a1a;
+  --color-primary-foreground:  #ffffff;
+  --color-secondary:           #f5f5f5;
+  --color-secondary-foreground:#1a1a1a;
+  --color-muted:               #f8f8f8;
+  --color-muted-foreground:    #666666;
+  --color-accent:              #f5f5f5;
+  --color-accent-foreground:   #1a1a1a;
+  --color-destructive:         oklch(0.577 0.245 27.325);
+  --color-border:              #e8e8e8;
+  --color-input:               #e8e8e8;
+  --color-ring:                #1a1a1a;
 
-  /* Brand */
-  --color-brand: oklch(0.55 0.22 260);
-  --color-brand-foreground: oklch(1 0 0);
-  --color-brand-muted: oklch(0.93 0.06 260);
+  /* ── Brand (editorial charcoal) ─────────────────────── */
+  --color-brand:               #1a1a1a;
+  --color-brand-foreground:    #ffffff;
+  --color-brand-muted:         #f0f0f0;
 
-  /* Category colors */
-  --color-cat-tech: oklch(0.55 0.22 260);
-  --color-cat-celebs: oklch(0.60 0.22 340);
-  --color-cat-viral: oklch(0.62 0.22 35);
+  /* ── Category accent colors ─────────────────────────── */
+  --color-cat-tech:    oklch(0.55 0.22 260);
+  --color-cat-celebs:  oklch(0.60 0.22 340);
+  --color-cat-viral:   oklch(0.62 0.22 35);
   --color-cat-finance: oklch(0.52 0.18 145);
-  --color-cat-health: oklch(0.58 0.20 160);
-  --color-cat-travel: oklch(0.58 0.18 210);
+  --color-cat-health:  oklch(0.58 0.20 160);
+  --color-cat-travel:  oklch(0.58 0.18 210);
 
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  /* ── Radii ──────────────────────────────────────────── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* ── Typography ─────────────────────────────────────── */
+  --font-sans:  var(--font-sans, "Source Sans 3", ui-sans-serif, system-ui, sans-serif);
+  --font-serif: var(--font-serif, "Playfair Display", Georgia, "Times New Roman", serif);
 }
 
-/* Dark mode overrides */
+/* ── Dark mode overrides ─────────────────────────────────── */
 .dark {
-  --color-background: oklch(0.09 0.005 285);
-  --color-foreground: oklch(0.97 0.002 285);
-  --color-card: oklch(0.13 0.006 285);
-  --color-card-foreground: oklch(0.97 0.002 285);
-  --color-popover: oklch(0.13 0.006 285);
-  --color-popover-foreground: oklch(0.97 0.002 285);
-  --color-primary: oklch(0.92 0.002 285);
-  --color-primary-foreground: oklch(0.13 0.006 285);
-  --color-secondary: oklch(0.18 0.006 285);
-  --color-secondary-foreground: oklch(0.92 0.002 285);
-  --color-muted: oklch(0.18 0.006 285);
-  --color-muted-foreground: oklch(0.62 0.015 285);
-  --color-accent: oklch(0.18 0.006 285);
-  --color-accent-foreground: oklch(0.92 0.002 285);
-  --color-destructive: oklch(0.65 0.22 27);
-  --color-border: oklch(0.22 0.006 285);
-  --color-input: oklch(0.22 0.006 285);
-  --color-ring: oklch(0.85 0.002 285);
-  --color-brand-muted: oklch(0.22 0.08 260);
+  --color-background:          #0f0f0f;
+  --color-foreground:          #f0f0f0;
+  --color-card:                #1a1a1a;
+  --color-card-foreground:     #f0f0f0;
+  --color-popover:             #1a1a1a;
+  --color-popover-foreground:  #f0f0f0;
+  --color-primary:             #f0f0f0;
+  --color-primary-foreground:  #111111;
+  --color-secondary:           #2a2a2a;
+  --color-secondary-foreground:#f0f0f0;
+  --color-muted:               #222222;
+  --color-muted-foreground:    #888888;
+  --color-accent:              #2a2a2a;
+  --color-accent-foreground:   #f0f0f0;
+  --color-destructive:         oklch(0.65 0.22 27);
+  --color-border:              #2e2e2e;
+  --color-input:               #2e2e2e;
+  --color-ring:                #f0f0f0;
+  --color-brand:               #f0f0f0;
+  --color-brand-muted:         #2a2a2a;
 }
 
+/* ── Base layer ─────────────────────────────────────────── */
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
+  * { border-color: var(--color-border); }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 400;
     transition: background-color 0.2s, color 0.2s;
   }
+
+  /* Playfair Display on all headings — the Blogxer signature */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-foreground);
+  }
+
   ::selection {
     background-color: var(--color-brand);
     color: white;
   }
 }
 
+/* ── Utilities ──────────────────────────────────────────── */
 @layer utilities {
-  /* Category accent helpers */
-  .cat-tech    { --cat-color: var(--color-cat-tech); }
-  .cat-celebs  { --cat-color: var(--color-cat-celebs); }
-  .cat-viral   { --cat-color: var(--color-cat-viral); }
-  .cat-finance { --cat-color: var(--color-cat-finance); }
-  .cat-health  { --cat-color: var(--color-cat-health); }
-  .cat-travel  { --cat-color: var(--color-cat-travel); }
 
-  .cat-badge {
-    background-color: color-mix(in oklch, var(--cat-color) 15%, transparent);
-    color: var(--cat-color);
-    font-size: 0.7rem;
+  /* Serif heading helper */
+  .font-serif { font-family: var(--font-serif); }
+  .font-sans  { font-family: var(--font-sans);  }
+
+  /* ── Section title with Blogxer-style short underline bar ── */
+  .section-title {
+    font-family: var(--font-serif);
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 0.2rem 0.65rem;
-    border-radius: 9999px;
-    display: inline-block;
+    color: var(--color-foreground);
+    letter-spacing: -0.01em;
+  }
+  .section-bar {
+    display: block;
+    width: 40px;
+    height: 3px;
+    background-color: var(--color-brand);
+    border-radius: 2px;
+    margin-top: 8px;
+  }
+  /* Wider bar variant for section dividers */
+  .section-bar-wide {
+    display: block;
+    width: 60px;
+    height: 3px;
+    background-color: var(--color-brand);
+    border-radius: 2px;
   }
 
-  /* Prose content — rich article typography */
+  /* ── Read-more button (Blogxer bordered style) ─────────── */
+  .btn-read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 8px 22px;
+    border: 1.5px solid var(--color-brand);
+    color: var(--color-brand);
+    background: transparent;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .btn-read-more:hover {
+    background: var(--color-brand);
+    color: var(--color-brand-foreground);
+  }
+
+  /* ── Category label (small uppercase text, Blogxer style) ── */
+  .cat-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  /* ── Widget title (sidebar heading with underline) ──────── */
+  .widget-title {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-foreground);
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--color-border);
+    position: relative;
+  }
+  .widget-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--color-brand);
+  }
+
+  /* ── Card styles ────────────────────────────────────────── */
+  .card-hover {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .card-hover:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+    transform: translateY(-3px);
+  }
+
+  /* ── Date badge (dark square on image) ─────────────────── */
+  .date-badge {
+    background-color: var(--color-brand);
+    color: var(--color-brand-foreground);
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 5px 10px;
+  }
+
+  /* ── Prose content (article body) ───────────────────────── */
   .prose-content {
+    font-family: var(--font-sans);
     font-size: 1.0625rem;
     line-height: 1.85;
     color: var(--color-foreground);
   }
+  .prose-content h1,
+  .prose-content h2,
+  .prose-content h3,
+  .prose-content h4,
+  .prose-content h5,
+  .prose-content h6 {
+    font-family: var(--font-serif);
+  }
   .prose-content h1 {
     font-size: 2rem;
-    font-weight: 800;
+    font-weight: 700;
     margin-top: 2.5rem;
     margin-bottom: 1rem;
-    color: var(--color-foreground);
     letter-spacing: -0.02em;
-    line-height: 1.2;
   }
   .prose-content h2 {
     font-size: 1.5rem;
     font-weight: 700;
     margin-top: 2.25rem;
     margin-bottom: 0.75rem;
-    color: var(--color-foreground);
     padding-bottom: 0.4rem;
-    border-bottom: 2px solid color-mix(in oklch, var(--color-brand) 30%, transparent);
+    border-bottom: 2px solid var(--color-border);
     letter-spacing: -0.01em;
+  }
+  .prose-content h2::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: var(--color-brand);
+    margin-top: 6px;
   }
   .prose-content h3 {
     font-size: 1.25rem;
@@ -135,32 +247,21 @@
     color: var(--color-brand);
   }
   .prose-content h4 {
-    font-size: 1.0625rem;
-    font-weight: 600;
+    font-size: 0.875rem;
+    font-weight: 700;
     margin-top: 1.5rem;
     margin-bottom: 0.4rem;
-    color: var(--color-foreground);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    font-family: var(--font-sans);
   }
-  .prose-content p {
-    margin-bottom: 1.25rem;
-    line-height: 1.85;
-    color: var(--color-foreground);
-  }
-  .prose-content ul, .prose-content ol {
-    padding-left: 1.75rem;
-    margin-bottom: 1.25rem;
-  }
+  .prose-content p  { margin-bottom: 1.25rem; }
+  .prose-content ul,
+  .prose-content ol { padding-left: 1.75rem; margin-bottom: 1.25rem; }
   .prose-content ul { list-style-type: disc; }
   .prose-content ol { list-style-type: decimal; }
-  .prose-content li {
-    margin-bottom: 0.5rem;
-    line-height: 1.75;
-    color: var(--color-foreground);
-  }
-  .prose-content a {
+  .prose-content li { margin-bottom: 0.5rem; line-height: 1.75; }
+  .prose-content a  {
     color: var(--color-brand);
     text-decoration: underline;
     text-decoration-thickness: 1px;
@@ -168,59 +269,47 @@
     font-weight: 500;
     transition: opacity 0.15s;
   }
-  .prose-content a:hover { opacity: 0.75; }
+  .prose-content a:hover { opacity: 0.7; }
   .prose-content blockquote {
     border-left: 4px solid var(--color-brand);
-    padding: 0.75rem 1.25rem;
+    padding: 1rem 1.5rem;
     margin: 1.75rem 0;
-    background: color-mix(in oklch, var(--color-brand) 6%, transparent);
-    border-radius: 0 0.5rem 0.5rem 0;
+    background: var(--color-muted);
     font-style: italic;
-    color: var(--color-muted-foreground);
-    font-size: 1.05rem;
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
   }
-  .prose-content blockquote p { margin-bottom: 0; }
-  .prose-content strong {
-    font-weight: 700;
-    color: var(--color-foreground);
-  }
-  .prose-content em { font-style: italic; }
+  .prose-content blockquote p { margin-bottom: 0; color: var(--color-muted-foreground); }
+  .prose-content strong { font-weight: 700; }
   .prose-content code {
-    font-family: "Menlo", "Consolas", monospace;
     font-size: 0.875em;
-    background: color-mix(in oklch, var(--color-brand) 10%, var(--color-muted));
+    background: var(--color-muted);
     color: var(--color-brand);
     padding: 0.15em 0.4em;
-    border-radius: 0.3rem;
+    border-radius: 3px;
   }
   .prose-content pre {
-    background: var(--color-foreground);
-    color: var(--color-background);
+    background: #1a1a1a;
+    color: #f0f0f0;
     padding: 1.25rem 1.5rem;
-    border-radius: 0.75rem;
+    border-radius: 4px;
     overflow-x: auto;
     margin: 1.5rem 0;
     font-size: 0.875rem;
     line-height: 1.6;
   }
-  .prose-content pre code {
-    background: none;
-    color: inherit;
-    padding: 0;
-  }
+  .prose-content pre code { background: none; color: inherit; padding: 0; }
   .prose-content hr {
     border: none;
-    height: 2px;
-    background: linear-gradient(to right, var(--color-brand), transparent);
+    height: 1px;
+    background: var(--color-border);
     margin: 2rem 0;
-    border-radius: 1px;
   }
   .prose-content img {
-    border-radius: 0.75rem;
+    border-radius: 4px;
     margin: 1.5rem auto;
     display: block;
     max-width: 100%;
-    box-shadow: 0 4px 20px color-mix(in oklch, var(--color-foreground) 10%, transparent);
   }
   .prose-content table {
     width: 100%;
@@ -234,53 +323,61 @@
     font-weight: 600;
     padding: 0.6rem 1rem;
     text-align: left;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
   .prose-content td {
     padding: 0.6rem 1rem;
     border-bottom: 1px solid var(--color-border);
-    color: var(--color-foreground);
   }
-  .prose-content tr:nth-child(even) td {
-    background: color-mix(in oklch, var(--color-muted) 50%, transparent);
-  }
-  /* First paragraph lead style */
-  .prose-content > p:first-of-type {
-    font-size: 1.125rem;
-    color: var(--color-foreground);
-    font-weight: 400;
-  }
+  .prose-content tr:nth-child(even) td { background: var(--color-muted); }
 
-  /* Card hover lift */
-  .card-hover {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-  .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 44px -8px color-mix(in oklch, var(--color-foreground) 16%, transparent);
-  }
-
-  /* Gradient image fallback */
-  .img-fallback {
-    background: linear-gradient(
-      135deg,
-      color-mix(in oklch, var(--cat-color, var(--color-brand)) 20%, var(--color-muted)),
-      color-mix(in oklch, var(--cat-color, var(--color-brand)) 40%, var(--color-muted))
-    );
-  }
-
-  /* Trending ticker animation */
+  /* ── Ticker animation ───────────────────────────────────── */
   @keyframes ticker {
     0%   { transform: translateX(0); }
     100% { transform: translateX(-50%); }
   }
   .animate-ticker {
-    animation: ticker 30s linear infinite;
+    animation: ticker 35s linear infinite;
   }
-  .animate-ticker:hover {
-    animation-play-state: paused;
+  .animate-ticker:hover { animation-play-state: paused; }
+
+  /* ── Mobile slide-down ──────────────────────────────────── */
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-down { animation: slideDown 0.2s ease forwards; }
+
+  /* ── Fade in ────────────────────────────────────────────── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in { animation: fadeIn 0.4s ease forwards; }
+
+  /* ── Live dot pulse ─────────────────────────────────────── */
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(1.5); }
+  }
+  .live-dot { animation: livePulse 1.4s ease-in-out infinite; }
+
+  /* ── Ticker edge fade ───────────────────────────────────── */
+  .fade-edges {
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
   }
 
-  /* Reading progress bar */
+  /* ── Horizontal rule fade-right ─────────────────────────── */
+  .line-fade-r {
+    height: 1px;
+    background: linear-gradient(to right, var(--color-border), transparent);
+  }
+
+  /* ── Reading progress bar ───────────────────────────────── */
   .reading-progress {
     position: fixed;
     top: 0;
@@ -291,77 +388,14 @@
     transition: width 0.1s linear;
   }
 
-  /* Fade in */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-in {
-    animation: fadeIn 0.4s ease forwards;
-  }
-
-  /* Slide down (mobile nav) */
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .animate-slide-down {
-    animation: slideDown 0.2s ease forwards;
-  }
-
-  /* Live dot pulse */
-  @keyframes livePulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.5; transform: scale(1.5); }
-  }
-  .live-dot {
-    animation: livePulse 1.4s ease-in-out infinite;
-  }
-
-  /* Gradient brand text */
-  .text-brand-gradient {
-    background: linear-gradient(135deg, var(--color-brand) 0%, oklch(0.65 0.25 300) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Ticker edge fade */
-  .fade-edges {
-    mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
-  }
-
-  /* Horizontal rule fade-right */
-  .line-fade-r {
-    height: 1px;
-    background: linear-gradient(to right, var(--color-border), transparent);
-  }
-
-  /* Number badge — editorial pick counter */
-  .pick-badge {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 900;
-    line-height: 1;
-    background: var(--color-brand);
-    color: white;
-    box-shadow: 0 4px 12px color-mix(in oklch, var(--color-brand) 50%, transparent);
-    flex-shrink: 0;
-  }
-
-  /* Skeleton shimmer */
+  /* ── Skeleton shimmer ───────────────────────────────────── */
   @keyframes shimmer {
     0%   { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    100% { background-position:  200% 0; }
   }
   .skeleton {
-    background: linear-gradient(90deg,
+    background: linear-gradient(
+      90deg,
       var(--color-muted) 25%,
       color-mix(in oklch, var(--color-muted) 60%, transparent) 50%,
       var(--color-muted) 75%
@@ -370,4 +404,17 @@
     animation: shimmer 1.5s infinite;
     border-radius: var(--radius-md);
   }
+
+  /* ── Image fallback gradient ───────────────────────────── */
+  .img-fallback {
+    background: linear-gradient(135deg, var(--color-muted) 0%, var(--color-border) 100%);
+  }
+
+  /* ── Cat accent helpers ─────────────────────────────────── */
+  .cat-tech    { --cat-color: var(--color-cat-tech); }
+  .cat-celebs  { --cat-color: var(--color-cat-celebs); }
+  .cat-viral   { --cat-color: var(--color-cat-viral); }
+  .cat-finance { --cat-color: var(--color-cat-finance); }
+  .cat-health  { --cat-color: var(--color-cat-health); }
+  .cat-travel  { --cat-color: var(--color-cat-travel); }
 }

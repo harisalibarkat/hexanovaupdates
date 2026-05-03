@@ -110,12 +110,12 @@ export default async function ArticlePage({ params }: Props) {
             </nav>
 
             {/* Category badge */}
-            <span className={`inline-block text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider mb-5 shadow-sm ${catBadge}`}>
+            <span className={`inline-block text-[10px] font-black px-3 py-1.5 uppercase tracking-widest mb-5 ${catBadge}`}>
               {category}
             </span>
 
             {/* Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-6">
               {post.title}
             </h1>
 
@@ -152,7 +152,7 @@ export default async function ArticlePage({ params }: Props) {
 
             {/* Featured image */}
             {post.featuredImage && (
-              <div className="relative aspect-video rounded-2xl overflow-hidden mb-10 bg-muted shadow-xl">
+              <div className="relative aspect-video overflow-hidden mb-10 bg-muted shadow-lg">
                 <Image
                   src={post.featuredImage}
                   alt={post.title}
@@ -193,7 +193,7 @@ export default async function ArticlePage({ params }: Props) {
                 {post.keywords.map((kw) => (
                   <span
                     key={kw}
-                    className="bg-muted text-muted-foreground text-xs px-3 py-1.5 rounded-full font-medium hover:bg-brand hover:text-white transition-colors cursor-default"
+                    className="bg-muted text-muted-foreground text-xs px-3 py-1.5 border border-border font-medium hover:border-brand hover:text-brand transition-colors cursor-default"
                   >
                     #{kw}
                   </span>
@@ -214,10 +214,10 @@ export default async function ArticlePage({ params }: Props) {
 
             {/* Related articles */}
             {linkedPosts.length > 0 && (
-              <aside className="mt-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-1.5 h-8 rounded-full bg-brand flex-shrink-0" />
-                  <h2 className="text-xl font-black tracking-tight">Related Articles</h2>
+              <aside className="mt-10 pt-8 border-t border-border">
+                <div className="mb-6">
+                  <h2 className="section-title text-xl">Related Articles</h2>
+                  <span className="section-bar" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {linkedPosts.map((link) => (

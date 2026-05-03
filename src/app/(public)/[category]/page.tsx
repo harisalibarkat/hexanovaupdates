@@ -96,21 +96,15 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           <CategoryNav active={category} />
 
           {/* Category title */}
-          <div className="mt-8 flex items-end gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className={`w-1.5 h-8 rounded-full ${accent}`} />
-                <span className={`text-xs font-black uppercase tracking-[0.18em] ${textColor}`}>
-                  {emoji} Category
-                </span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground leading-none">
-                {label} News
-              </h1>
-              <p className="text-muted-foreground mt-2 text-sm">
-                Latest trending stories and updates in {label.toLowerCase()}
-              </p>
-            </div>
+          <div className="mt-8">
+            <span className={`cat-label text-xs mb-3 block ${textColor}`}>{emoji} Category</span>
+            <h1 className="section-title text-3xl sm:text-4xl text-foreground">
+              {label} News
+            </h1>
+            <span className={`section-bar ${accent}`} />
+            <p className="text-muted-foreground mt-4 text-sm">
+              Latest trending stories and updates in {label.toLowerCase()}
+            </p>
           </div>
         </div>
       </div>
@@ -159,24 +153,24 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             {page > 1 && (
               <a
                 href={`/${category}?page=${page - 1}`}
-                className="px-5 py-2.5 rounded-xl border border-border hover:bg-muted transition-colors text-sm font-semibold flex items-center gap-2"
+                className="btn-read-more"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m15 18-6-6 6-6"/>
                 </svg>
                 Previous
               </a>
             )}
-            <span className="text-sm text-muted-foreground px-4 py-2 rounded-lg bg-muted font-semibold">
+            <span className="text-sm text-muted-foreground px-4 py-2 bg-muted font-semibold cat-label">
               Page {page}
             </span>
             {hasMore && (
               <a
                 href={`/${category}?page=${page + 1}`}
-                className="px-5 py-2.5 rounded-xl bg-brand text-white hover:opacity-90 transition-opacity text-sm font-semibold flex items-center gap-2 shadow-md shadow-brand/30"
+                className="btn-read-more bg-brand text-white border-brand hover:bg-brand/90 hover:text-white"
               >
                 Next
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m9 18 6-6-6-6"/>
                 </svg>
               </a>
