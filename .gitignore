@@ -30,5 +30,4 @@ Thumbs.db
 *.njsproj
 *.sln
 
-# Drizzle local snapshots (keep .sql migrations tracked)
-drizzle/migrations/meta/_journal.json
+# Drizzle (keep migrations and meta tracked)
