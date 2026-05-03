@@ -4,10 +4,17 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://hexanovaupdates.com";
+function resolveBaseUrl(): URL {
+  const raw = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  try {
+    const u = new URL(raw);
+    if (u.hostname) return u;
+  } catch {}
+  return new URL("https://hexanovaupdates.com");
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL(APP_URL),
+  metadataBase: resolveBaseUrl(),
   title: {
     template: "%s | HexaNovaUpdates",
     default: "HexaNovaUpdates — Trending News & Updates",
