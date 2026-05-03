@@ -1,12 +1,21 @@
 import Groq from "groq-sdk";
 import { db } from "@/lib/db";
-import { trends, posts, internalLinks } from "@/lib/db/schema";
+import { trends, posts, internalLinks, settings } from "@/lib/db/schema";
 import { eq, and, ne, sql } from "drizzle-orm";
 import { createSlug, estimateReadingTime, categoryLabel } from "@/lib/utils";
 import { buildStructuredData } from "@/lib/seo/structured-data";
 import { fetchArticleImage } from "@/lib/images/unsplash";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+async function getGroqClient(): Promise<Groq> {
+  const row = await db.query.settings.findFirst({ where: eq(settings.key, "groq_api_key") });
+  const apiKey = row?.value || process.env.GROQ_API_KEY || "";
+  return new Groq({ apiKey });
+}
+
+async function getGroqModel(): Promise<string> {
+  const row = await db.query.settings.findFirst({ where: eq(settings.key, "groq_model") });
+  return row?.value || "llama-3.3-70b-versatile";
+}
 
 function sanitizeJson(raw: string): string {
   // Extract JSON object, strip markdown code fences
@@ -41,9 +50,11 @@ export async function generateArticle(
   category: string
 ): Promise<GeneratedArticle> {
   const categoryName = categoryLabel(category);
+  const groq = await getGroqClient();
+  const model = await getGroqModel();
 
   const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model,
     max_tokens: 4096,
     temperature: 0.7,
     messages: [

@@ -51,14 +51,41 @@ export function SettingsForm({ settings }: Props) {
         <Toggle name="ads_enabled" label="Enable Ads" defaultChecked={settings.ads_enabled !== "false"} />
       </Section>
 
+      {/* AI & Content Generation */}
+      <Section title="AI & Content Generation">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Toggle name="rss_sync_enabled"    label="RSS Feed Syncing"      defaultChecked={settings.rss_sync_enabled    !== "false"} />
+          <Toggle name="ai_generation_enabled" label="AI Article Writing"  defaultChecked={settings.ai_generation_enabled !== "false"} />
+        </div>
+        <p className="text-xs text-muted-foreground -mt-1">
+          Disable RSS Feed Syncing to stop fetching new trends. Disable AI Article Writing to stop generating articles from fetched trends.
+        </p>
+        <Field
+          name="groq_api_key"
+          label="Groq API Key"
+          defaultValue={settings.groq_api_key ?? ""}
+          placeholder="gsk_…  (leave blank to use server environment variable)"
+          type="password"
+        />
+        <Field
+          name="groq_model"
+          label="Groq Model"
+          defaultValue={settings.groq_model ?? "llama-3.3-70b-versatile"}
+          placeholder="llama-3.3-70b-versatile"
+        />
+        <p className="text-xs text-muted-foreground -mt-2">
+          Get a free API key at <a href="https://console.groq.com" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">console.groq.com</a>. Recommended free model: <code className="text-xs bg-muted px-1 rounded">llama-3.3-70b-versatile</code>.
+        </p>
+      </Section>
+
       {/* Automation */}
       <Section title="Automation">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Toggle name="auto_publish_enabled" label="Auto-Publish Drafts" defaultChecked={settings.auto_publish_enabled !== "false"} />
-          <Toggle name="trend_detection_enabled" label="Trend Detection" defaultChecked={settings.trend_detection_enabled !== "false"} />
+          <Toggle name="auto_publish_enabled"    label="Auto-Publish Drafts" defaultChecked={settings.auto_publish_enabled    !== "false"} />
+          <Toggle name="trend_detection_enabled" label="Run Cron Jobs"        defaultChecked={settings.trend_detection_enabled !== "false"} />
         </div>
-        <Field name="max_posts_per_run" label="Max Posts per Cron Run" defaultValue={settings.max_posts_per_run ?? "5"} type="number" />
-        <Field name="posts_per_page" label="Posts per Page" defaultValue={settings.posts_per_page ?? "12"} type="number" />
+        <Field name="max_posts_per_run" label="Max Articles per Cron Run" defaultValue={settings.max_posts_per_run ?? "5"} type="number" />
+        <Field name="posts_per_page"   label="Posts per Page"             defaultValue={settings.posts_per_page   ?? "12"} type="number" />
       </Section>
 
       {/* Content Scheduling */}
@@ -184,7 +211,7 @@ function Field({
   name, label, defaultValue, type = "text", placeholder,
 }: {
   name: string; label: string; defaultValue: string;
-  type?: "text" | "number" | "textarea"; placeholder?: string;
+  type?: "text" | "number" | "textarea" | "password"; placeholder?: string;
 }) {
   return (
     <div>

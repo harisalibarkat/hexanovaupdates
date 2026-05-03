@@ -25,7 +25,10 @@ const DEFAULT_SETTINGS = [
   { key: "posts_per_page",           value: "12" },
   { key: "auto_publish_enabled",     value: "true" },
   { key: "trend_detection_enabled",  value: "true" },
+  { key: "rss_sync_enabled",         value: "true" },
+  { key: "ai_generation_enabled",    value: "true" },
   { key: "max_posts_per_run",        value: "5" },
+  { key: "groq_model",               value: "llama-3.3-70b-versatile" },
 ];
 
 async function seed() {

@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { posts } from "@/lib/db/schema";
+import { posts, settings } from "@/lib/db/schema";
 import { eq, and, lte } from "drizzle-orm";
+
+async function getSetting(key: string, fallback = "true"): Promise<string> {
+  const row = await db.query.settings.findFirst({ where: eq(settings.key, key) });
+  return row?.value ?? fallback;
+}
 
 export async function POST(req: NextRequest) {
   const secret = req.headers.get("x-cron-secret");
@@ -10,18 +15,22 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const autoPublishEnabled = await getSetting("auto_publish_enabled", "true");
+    if (autoPublishEnabled === "false") {
+      return NextResponse.json({ success: true, skipped: "auto_publish_disabled" });
+    }
+
+    const maxPostsPerRun = parseInt(await getSetting("max_posts_per_run", "5"), 10);
     const now = new Date();
 
-    // Publish scheduled posts that are due
     const scheduled = await db.query.posts.findMany({
       where: and(eq(posts.status, "scheduled"), lte(posts.scheduledAt!, now)),
     });
 
-    // Also auto-publish up to 5 drafts
     const drafts = await db.query.posts.findMany({
       where: eq(posts.status, "draft"),
       orderBy: (p, { asc }) => [asc(p.createdAt)],
-      limit: 5,
+      limit: maxPostsPerRun,
     });
 
     const toPublish = [...scheduled, ...drafts];
