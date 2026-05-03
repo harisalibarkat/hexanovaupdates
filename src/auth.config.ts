@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 // Edge-compatible auth config — no Node.js-only imports (no pg, no bcryptjs).
 // Used by middleware only. Full auth with DB adapter lives in src/lib/auth.ts.
 export const authConfig = {
+  trustHost: true,
   pages: { signIn: "/login" },
   session: { strategy: "jwt" },
   providers: [
