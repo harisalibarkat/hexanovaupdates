@@ -24,15 +24,11 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category, slug } = await params;
-
   if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) notFound();
-
   const post = await db.query.posts.findFirst({
     where: and(eq(posts.slug, slug), eq(posts.status, "published")),
   });
-
   if (!post) notFound();
-
   return buildPostMetadata({
     title: post.title,
     metaTitle: post.metaTitle,
@@ -45,24 +41,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
+const CAT_BADGE: Record<string, string> = {
+  tech:    "bg-blue-600 text-white",
+  celebs:  "bg-pink-600 text-white",
+  viral:   "bg-orange-500 text-white",
+  finance: "bg-emerald-600 text-white",
+  health:  "bg-green-600 text-white",
+  travel:  "bg-cyan-600 text-white",
+};
+
 export default async function ArticlePage({ params }: Props) {
   const { category, slug } = await params;
-
   if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) notFound();
 
   const post = await db.query.posts.findFirst({
     where: and(eq(posts.slug, slug), eq(posts.status, "published")),
   });
-
   if (!post) notFound();
 
-  // Increment view count (fire and forget)
   db.update(posts)
     .set({ viewCount: (post.viewCount ?? 0) + 1 })
     .where(eq(posts.id, post.id))
     .catch(() => {});
 
-  // Fetch related posts via internal links
   const linkedPosts = await db.query.internalLinks.findMany({
     where: eq(internalLinks.sourcePostId, post.id),
     with: { targetPost: true },
@@ -70,8 +71,9 @@ export default async function ArticlePage({ params }: Props) {
   });
 
   const breadcrumb = buildBreadcrumbSchema(category, post.title);
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://hexanovaupdates.com";
-  const fullUrl = `${appUrl}/${category}/${slug}`;
+  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? "https://hexanovaupdates.com";
+  const fullUrl    = `${appUrl}/${category}/${slug}`;
+  const catBadge   = CAT_BADGE[category] ?? "bg-brand text-white";
 
   return (
     <>
@@ -88,35 +90,44 @@ export default async function ArticlePage({ params }: Props) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
-          {/* ── Left column: article content (2/3) ──────────────────────── */}
+
+          {/* ── Article column (2/3) ─────────────────────────────────────── */}
           <article className="lg:col-span-2 min-w-0">
+
             {/* Breadcrumbs */}
-            <nav className="text-sm text-muted-foreground mb-6 flex items-center gap-2 flex-wrap">
-              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-              <span>/</span>
-              <Link href={`/${category}`} className="hover:text-foreground capitalize transition-colors">{category}</Link>
-              <span>/</span>
+            <nav className="text-xs text-muted-foreground mb-6 flex items-center gap-1.5 flex-wrap">
+              <Link href="/" className="hover:text-foreground transition-colors font-medium">Home</Link>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+              <Link href={`/${category}`} className="hover:text-foreground capitalize transition-colors font-medium">{category}</Link>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
               <span className="text-foreground line-clamp-1">
-                {post.title.length > 50 ? post.title.slice(0, 50) + "…" : post.title}
+                {post.title.length > 55 ? post.title.slice(0, 55) + "…" : post.title}
               </span>
             </nav>
 
             {/* Category badge */}
-            <span className="inline-block bg-brand text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide mb-4">
+            <span className={`inline-block text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider mb-5 shadow-sm ${catBadge}`}>
               {category}
             </span>
 
-            <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight mb-5">{post.title}</h1>
+            {/* Title */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight mb-6 tracking-tight">
+              {post.title}
+            </h1>
 
-            {/* Meta */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6 pb-6 border-b border-border">
+            {/* Meta bar */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8 pb-6 border-b border-border/60">
               {post.publishedAt && (
                 <time dateTime={post.publishedAt.toISOString()} className="flex items-center gap-1.5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-                    <line x1="16" x2="16" y1="2" y2="6" />
-                    <line x1="8" x2="8" y1="2" y2="6" />
-                    <line x1="3" x2="21" y1="10" y2="10" />
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                    <line x1="16" x2="16" y1="2" y2="6"/>
+                    <line x1="8" x2="8" y1="2" y2="6"/>
+                    <line x1="3" x2="21" y1="10" y2="10"/>
                   </svg>
                   {formatDate(post.publishedAt)}
                 </time>
@@ -124,8 +135,7 @@ export default async function ArticlePage({ params }: Props) {
               {post.readingTime && (
                 <span className="flex items-center gap-1.5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                   </svg>
                   {post.readingTime} min read
                 </span>
@@ -133,8 +143,7 @@ export default async function ArticlePage({ params }: Props) {
               {post.viewCount > 0 && (
                 <span className="flex items-center gap-1.5">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                    <circle cx="12" cy="12" r="3" />
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                   </svg>
                   {post.viewCount.toLocaleString()} views
                 </span>
@@ -143,7 +152,7 @@ export default async function ArticlePage({ params }: Props) {
 
             {/* Featured image */}
             {post.featuredImage && (
-              <div className="relative aspect-video rounded-2xl overflow-hidden mb-8 bg-muted">
+              <div className="relative aspect-video rounded-2xl overflow-hidden mb-10 bg-muted shadow-xl">
                 <Image
                   src={post.featuredImage}
                   alt={post.title}
@@ -155,8 +164,8 @@ export default async function ArticlePage({ params }: Props) {
               </div>
             )}
 
-            {/* AdSense in-article */}
-            <div className="my-6 flex justify-center">
+            {/* In-article ad */}
+            <div className="my-8 flex justify-center">
               <ins
                 className="adsbygoogle"
                 style={{ display: "block", textAlign: "center" }}
@@ -167,24 +176,24 @@ export default async function ArticlePage({ params }: Props) {
               />
             </div>
 
-            {/* Article content */}
+            {/* Article body */}
             <div
               className="prose-content text-foreground leading-relaxed"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
-            {/* Advertisement placeholder — after content, before keywords */}
-            <div className="my-8 p-4 bg-muted/30 border border-dashed border-border rounded-xl text-center text-sm text-muted-foreground">
+            {/* Advertisement placeholder */}
+            <div className="my-10 p-5 bg-muted/40 border border-dashed border-border/60 rounded-2xl text-center text-sm text-muted-foreground">
               Advertisement
             </div>
 
-            {/* Keywords */}
+            {/* Keywords / tags */}
             {post.keywords && post.keywords.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-2">
                 {post.keywords.map((kw) => (
                   <span
                     key={kw}
-                    className="bg-muted text-muted-foreground text-xs px-3 py-1.5 rounded-full font-medium"
+                    className="bg-muted text-muted-foreground text-xs px-3 py-1.5 rounded-full font-medium hover:bg-brand hover:text-white transition-colors cursor-default"
                   >
                     #{kw}
                   </span>
@@ -192,8 +201,8 @@ export default async function ArticlePage({ params }: Props) {
               </div>
             )}
 
-            {/* Share buttons */}
-            <div className="mt-8 pt-8 border-t border-border">
+            {/* Share */}
+            <div className="mt-10 pt-8 border-t border-border/60">
               <ShareButtons title={post.title} url={fullUrl} />
             </div>
 
@@ -203,10 +212,13 @@ export default async function ArticlePage({ params }: Props) {
             {/* Comments */}
             <CommentSection postId={post.id} />
 
-            {/* Related Articles */}
+            {/* Related articles */}
             {linkedPosts.length > 0 && (
-              <aside className="mt-4">
-                <h2 className="text-2xl font-bold mb-5">Related Articles</h2>
+              <aside className="mt-10">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-1.5 h-8 rounded-full bg-brand flex-shrink-0" />
+                  <h2 className="text-xl font-black tracking-tight">Related Articles</h2>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {linkedPosts.map((link) => (
                     <ArticleCard key={link.targetPostId} article={link.targetPost} />
@@ -218,8 +230,8 @@ export default async function ArticlePage({ params }: Props) {
             <PageViewTracker postId={post.id} />
           </article>
 
-          {/* ── Right column: sidebar (1/3) ──────────────────────────────── */}
-          <div className="lg:col-span-1 w-full lg:sticky lg:top-6">
+          {/* ── Sidebar (1/3) ────────────────────────────────────────────── */}
+          <div className="lg:col-span-1 w-full lg:sticky lg:top-24">
             <ArticleSidebar
               currentPostId={post.id}
               category={post.category}
