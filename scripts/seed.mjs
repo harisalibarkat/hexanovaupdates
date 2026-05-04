@@ -17,6 +17,16 @@ const RSS_SOURCES = [
   { name: "Healthline",         url: "https://www.healthline.com/rss-feed",                                  category: "health"  },
   { name: "Lonely Planet",      url: "https://www.lonelyplanet.com/news/feed",                               category: "travel"  },
   { name: "Travel + Leisure",   url: "https://www.travelandleisure.com/rss",                                 category: "travel"  },
+
+  // Finland
+  { name: "YLE News Finland",   url: "https://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_UUTISET", category: "viral"   },
+  { name: "Helsinki Times",     url: "https://www.helsinkitimes.fi/feed",                                    category: "viral"   },
+  { name: "Arctic Startup",     url: "https://arcticstartup.com/feed/",                                      category: "tech"    },
+  { name: "Slush Blog",         url: "https://www.slush.org/feed/",                                          category: "tech"    },
+  { name: "Business Finland",   url: "https://www.businessfinland.fi/en/rss.xml",                            category: "finance" },
+  { name: "Visit Finland",      url: "https://www.visitfinland.com/feed/",                                   category: "travel"  },
+  { name: "ThisisFINLAND",      url: "https://finland.fi/feed/",                                             category: "travel"  },
+  { name: "THL Finland",        url: "https://thl.fi/en/rss.xml",                                            category: "health"  },
 ];
 
 const DEFAULT_SETTINGS = [
