@@ -34,7 +34,7 @@ export async function GET(
     }
   }
 
-  return new NextResponse(file, {
+  return new NextResponse(new Uint8Array(file), {
     headers: {
       "Content-Type": contentType,
       "Cache-Control": "public, max-age=3600",
