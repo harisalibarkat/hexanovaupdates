@@ -21,7 +21,7 @@ export function AdminShell({ user, children }: Props) {
   }, [pathname]);
 
   return (
-    <div className="flex h-screen bg-muted/30 overflow-hidden">
+    <div className="flex h-screen bg-muted/60 overflow-hidden">
       {/* Mobile overlay */}
       {open && (
         <div

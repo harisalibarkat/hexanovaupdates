@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { generateArticleFromTrend, syncRSSNow } from "@/actions/generate";
 import { useRouter } from "next/navigation";
 import type { Trend } from "@/lib/db/schema";
-import { formatDate, categoryLabel } from "@/lib/utils";
+import { formatDateTime, categoryLabel } from "@/lib/utils";
 
 interface Props {
   trends: Trend[];
@@ -80,7 +80,7 @@ function TrendRow({ trend, onGenerated }: { trend: Trend; onGenerated: () => voi
         <div className="flex items-center gap-2 mt-1">
           <span className="text-xs text-muted-foreground capitalize">{categoryLabel(trend.category)}</span>
           {trend.publishedAt && (
-            <span className="text-xs text-muted-foreground">· {formatDate(trend.publishedAt)}</span>
+            <span className="text-xs text-muted-foreground">· {formatDateTime(trend.publishedAt)}</span>
           )}
           {trend.url && (
             <a

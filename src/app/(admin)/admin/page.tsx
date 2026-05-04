@@ -7,7 +7,7 @@ import { SuggestedNews } from "@/components/admin/SuggestedNews";
 import { ManualGenerator } from "@/components/admin/ManualGenerator";
 import { BulkActions } from "@/components/admin/BulkActions";
 import { ArticleActivity } from "@/components/admin/ArticleActivity";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 import Link from "next/link";
 
 export const metadata = { title: "Dashboard" };
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm line-clamp-1">{post.title}</p>
                 <p className="text-xs text-muted-foreground mt-0.5 capitalize">
-                  {post.category} · {formatDate(post.createdAt)}
+                  {post.category} · {formatDateTime(post.createdAt)}
                 </p>
               </div>
               <span className={`flex-shrink-0 text-xs px-2.5 py-1 rounded-full font-semibold ${

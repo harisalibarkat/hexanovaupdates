@@ -69,6 +69,7 @@ const TABS = [
   { id: "site",       label: "Site",         icon: "🌐" },
   { id: "ai",         label: "AI & Content", icon: "🤖" },
   { id: "seo",        label: "SEO",          icon: "🔍" },
+  { id: "analytics",  label: "Analytics",    icon: "📊" },
   { id: "automation", label: "Automation",   icon: "⚙️" },
   { id: "ads",        label: "Advertising",  icon: "💰" },
   { id: "images",     label: "Images",       icon: "🖼️" },
@@ -123,7 +124,7 @@ export function SettingsForm({ settings }: Props) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2.5 text-sm px-3 py-2.5 rounded-lg text-left transition-colors w-full ${
                 activeTab === tab.id
-                  ? "bg-brand text-white font-medium"
+                  ? "bg-brand text-brand-foreground font-medium"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
@@ -143,11 +144,17 @@ export function SettingsForm({ settings }: Props) {
             <Field name="site_tagline"     label="Tagline"           defaultValue={settings.site_tagline     ?? ""} />
             <Field name="site_description" label="Site Description"  defaultValue={settings.site_description ?? ""} type="textarea" />
             <hr className="border-border" />
-            <h3 className="text-sm font-semibold">SEO & Analytics</h3>
-            <Field name="google_analytics_id"       label="Google Analytics ID"          defaultValue={settings.google_analytics_id       ?? ""} placeholder="G-XXXXXXXXXX" />
-            <Field name="google_site_verification"  label="Google Search Console Token"  defaultValue={settings.google_site_verification  ?? ""} placeholder="google-site-verification=..." />
-            <Field name="default_og_image"          label="Default OG Image URL"         defaultValue={settings.default_og_image          ?? ""} placeholder="https://..." />
-            <Field name="twitter_handle"            label="Twitter / X Handle"           defaultValue={settings.twitter_handle            ?? ""} placeholder="@yourhandle" />
+            <h3 className="text-sm font-semibold">Analytics & Tracking</h3>
+            <Field name="google_analytics_id"      label="Google Analytics 4 ID"                    defaultValue={settings.google_analytics_id      ?? ""} placeholder="G-XXXXXXXXXX" />
+            <Field name="google_tag_manager_id"    label="Google Tag Manager Container ID"           defaultValue={settings.google_tag_manager_id    ?? ""} placeholder="GTM-XXXXXXX" />
+            <p className="text-xs text-muted-foreground -mt-2">
+              GTM loads on every public page. Use it to deploy GA4, ads pixels, heatmaps, and any other tags without code changes. Get your container ID at{" "}
+              <a href="https://tagmanager.google.com" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">tagmanager.google.com</a>.
+            </p>
+            <hr className="border-border" />
+            <h3 className="text-sm font-semibold">Open Graph / Social</h3>
+            <Field name="default_og_image"  label="Default OG Image URL"   defaultValue={settings.default_og_image  ?? ""} placeholder="https://..." />
+            <Field name="twitter_handle"    label="Twitter / X Handle"     defaultValue={settings.twitter_handle    ?? ""} placeholder="@yourhandle" />
           </TabSection>
         </div>
 
@@ -166,6 +173,42 @@ export function SettingsForm({ settings }: Props) {
         </div>
 
         <div className={activeTab === "seo" ? "space-y-5" : "hidden"}>
+          <TabSection title="Search Engine Indexing">
+            <Toggle
+              name="noindex_search_pages"
+              label="Noindex internal search result pages"
+              defaultChecked={settings.noindex_search_pages === "true"}
+            />
+            <p className="text-xs text-muted-foreground">
+              Recommended: prevents thin search-result pages from diluting crawl budget.
+            </p>
+            <hr className="border-border" />
+            <h3 className="text-sm font-semibold">Site Verification</h3>
+            <Field name="google_site_verification" label="Google Search Console Verification Token" defaultValue={settings.google_site_verification ?? ""} placeholder="google-site-verification=..." />
+            <p className="text-xs text-muted-foreground">Paste the full meta tag value (after content=&quot;&hellip;&quot;) from Google Search Console.</p>
+          </TabSection>
+
+          <TabSection title="Content Quality (Auto-Blogging)">
+            <Toggle
+              name="ai_content_disclosure"
+              label='Show "AI-assisted content" badge on auto-generated articles'
+              defaultChecked={settings.ai_content_disclosure === "true"}
+            />
+            <p className="text-xs text-muted-foreground">
+              Transparency with readers improves E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) — a Google ranking factor.
+              When enabled a small badge appears on AI-generated articles.
+            </p>
+            <hr className="border-border" />
+            <h3 className="text-sm font-semibold text-muted-foreground">Checklist — Content Quality for Auto-Blogging</h3>
+            <ul className="text-xs text-muted-foreground space-y-1.5 list-none">
+              <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span><span><strong>Unique content</strong> — Each article is generated fresh by the AI from the trend headline, not copy-pasted.</span></li>
+              <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span><span><strong>Adds value</strong> — Prompts are tuned for expert analysis and background context, not just rewriting.</span></li>
+              <li className="flex items-start gap-2"><span className="text-green-600 font-bold mt-0.5">✓</span><span><strong>Regular updates</strong> — Cron jobs run automatically to keep content fresh.</span></li>
+              <li className="flex items-start gap-2"><span className="text-amber-500 font-bold mt-0.5">⚠</span><span><strong>Fact-checking</strong> — AI content may contain errors. Review important articles in <a href="/admin/posts" className="text-brand hover:underline">Posts Manager</a> before publishing.</span></li>
+              <li className="flex items-start gap-2"><span className="text-amber-500 font-bold mt-0.5">⚠</span><span><strong>Manual intros/conclusions</strong> — Use the <a href="/admin/posts" className="text-brand hover:underline">post editor</a> to add a personal touch to high-traffic articles.</span></li>
+            </ul>
+          </TabSection>
+
           <TabSection title="SEO Auto-Optimization">
             <Toggle
               name="seo_optimization_enabled"
@@ -181,6 +224,46 @@ export function SettingsForm({ settings }: Props) {
             </div>
             <p className="text-xs text-muted-foreground">
               Cooldown prevents re-optimizing the same article within N days. Use <a href="/admin/seo" className="text-brand hover:underline">Admin → SEO Optimizer</a> for manual runs.
+            </p>
+          </TabSection>
+        </div>
+
+        <div className={activeTab === "analytics" ? "space-y-5" : "hidden"}>
+          <TabSection title="Webmaster Tools Verification">
+            <Field
+              name="bing_site_verification"
+              label="Bing Webmaster Tools Verification Tag"
+              defaultValue={settings.bing_site_verification ?? ""}
+              placeholder="Paste the value from the BingSiteAuth meta tag"
+            />
+            <p className="text-xs text-muted-foreground -mt-2">
+              In Bing Webmaster Tools → Settings → Verify ownership → choose Meta tag method. Copy only the content=&quot;&hellip;&quot; value.
+            </p>
+            <Field
+              name="yandex_verification"
+              label="Yandex Webmaster Verification Code"
+              defaultValue={settings.yandex_verification ?? ""}
+              placeholder="e.g. 1234abcd5678efgh"
+            />
+            <p className="text-xs text-muted-foreground -mt-2">
+              In Yandex Webmaster → Add site → Meta tag method. Copy only the content=&quot;&hellip;&quot; value.
+            </p>
+          </TabSection>
+
+          <TabSection title="IndexNow (Fast Indexing)">
+            <Field
+              name="index_now_key"
+              label="IndexNow API Key"
+              defaultValue={settings.index_now_key ?? ""}
+              placeholder="e.g. 9f6b3c12d4e5a7b8c9d0e1f2a3b4c5d6"
+            />
+            <p className="text-xs text-muted-foreground -mt-2">
+              IndexNow lets you instantly notify Bing, Yandex, and other supporting engines when you publish or update a page.
+              Generate a key at{" "}
+              <a href="https://www.indexnow.org/documentation" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
+                indexnow.org
+              </a>
+              . Once saved, new articles will auto-ping the IndexNow endpoint.
             </p>
           </TabSection>
         </div>

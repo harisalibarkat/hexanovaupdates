@@ -7,7 +7,11 @@ import { auth } from "@/lib/auth";
 
 const ALLOWED_KEYS = new Set([
   "site_name", "site_tagline", "site_description",
-  "google_analytics_id", "google_site_verification", "default_og_image", "twitter_handle",
+  "google_analytics_id", "google_tag_manager_id",
+  "google_site_verification", "bing_site_verification", "yandex_verification",
+  "index_now_key",
+  "default_og_image", "twitter_handle",
+  "ai_content_disclosure", "noindex_search_pages",
   "adsense_publisher_id", "ad_slot_header", "ad_slot_in_article", "ad_slot_sidebar", "ad_slot_footer",
   "ad_custom_header", "ads_enabled",
   "auto_publish_enabled", "trend_detection_enabled", "max_posts_per_run", "posts_per_page",
@@ -53,6 +57,8 @@ export async function saveSettings(formData: FormData) {
     "homepage_show_newsletter",
     "homepage_show_trending",
     "homepage_show_categories",
+    "ai_content_disclosure",
+    "noindex_search_pages",
   ] as const;
 
   for (const key of toggleKeys) {

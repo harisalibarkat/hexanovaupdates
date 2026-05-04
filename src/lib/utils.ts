@@ -28,6 +28,17 @@ export function formatDate(date: Date | string): string {
   });
 }
 
+export function formatDateTime(date: Date | string): string {
+  return new Date(date).toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
 export function categoryLabel(category: string): string {
   const labels: Record<string, string> = {
     tech: "Technology",

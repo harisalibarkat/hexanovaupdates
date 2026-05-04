@@ -15,7 +15,9 @@ interface Props {
 
 export function Header({ logoUrlLight, logoUrlDark }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(
+    () => typeof document !== "undefined" && document.documentElement.classList.contains("dark")
+  );
   const pathname = usePathname();
 
   useEffect(() => {

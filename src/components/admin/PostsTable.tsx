@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { updatePostStatus, deletePost } from "@/actions/posts";
-import { formatDate, categoryLabel } from "@/lib/utils";
+import { formatDateTime, categoryLabel } from "@/lib/utils";
 import type { Post } from "@/lib/db/schema";
 
 interface Props {
@@ -103,11 +103,11 @@ export function PostsTable({ posts, page, hasMore }: Props) {
                 <td className="px-4 py-3 text-xs space-y-0.5">
                   <div className="text-muted-foreground">
                     <span className="font-medium text-foreground/60">Created</span>{" "}
-                    {formatDate(post.createdAt)}
+                    {formatDateTime(post.createdAt)}
                   </div>
                   <div className="text-muted-foreground">
                     <span className="font-medium text-foreground/60">Published</span>{" "}
-                    {post.publishedAt ? formatDate(post.publishedAt) : <span className="italic">—</span>}
+                    {post.publishedAt ? formatDateTime(post.publishedAt) : <span className="italic">—</span>}
                   </div>
                   <div className="mt-1">
                     {post.trendId ? (
