@@ -48,26 +48,40 @@ export async function generateArticleFromTopic(
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
 
-  const parsed = topicSchema.parse({
-    topic: formData.get("topic"),
-    category: formData.get("category"),
-  });
+  let parsed: { topic: string; category: "tech" | "celebs" | "viral" | "finance" | "health" | "travel" };
+  try {
+    parsed = topicSchema.parse({
+      topic: formData.get("topic"),
+      category: formData.get("category"),
+    });
+  } catch {
+    throw new Error("Invalid input: please check the topic and category.");
+  }
 
   const catName = categoryLabel(parsed.category);
-  const [clients, model] = await Promise.all([getGroqClients(), getGroqModel()]);
+  let clients: Awaited<ReturnType<typeof getGroqClients>>;
+  let model: string;
+  try {
+    [clients, model] = await Promise.all([getGroqClients(), getGroqModel()]);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to load AI configuration: ${msg}`);
+  }
 
-  const completion = await groqChatWithFallback(clients, {
-    model,
-    max_tokens: 4096,
-    temperature: 0.7,
-    messages: [
-      {
-        role: "system",
-        content: "You are an expert SEO content writer for HexaNovaUpdates. Respond with valid JSON only.",
-      },
-      {
-        role: "user",
-        content: `Write a detailed SEO-optimized article about: "${parsed.topic}" in the ${catName} category.
+  let completion: Awaited<ReturnType<typeof groqChatWithFallback>>;
+  try {
+    completion = await groqChatWithFallback(clients, {
+      model,
+      max_tokens: 2048,
+      temperature: 0.7,
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert SEO content writer for HexaNovaUpdates. Respond with valid JSON only.",
+        },
+        {
+          role: "user",
+          content: `Write a detailed SEO-optimized article about: "${parsed.topic}" in the ${catName} category.
 
 Return a JSON object with exactly these fields:
 {
@@ -78,9 +92,13 @@ Return a JSON object with exactly these fields:
   "excerpt": "Article excerpt for previews (150-200 chars)",
   "content": "Full article in HTML format. Use <h2>, <h3>, <p>, <ul>, <li> tags. Minimum 800 words."
 }`,
-      },
-    ],
-  });
+        },
+      ],
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(msg);
+  }
 
   const raw = completion.choices[0].message.content ?? "{}";
   let article: Record<string, unknown>;

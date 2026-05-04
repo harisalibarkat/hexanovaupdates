@@ -98,12 +98,12 @@ export async function ArticleActivity() {
 
       {/* Today summary pills */}
       <div className="flex items-center gap-3 flex-wrap">
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block" />
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-600 text-white dark:bg-blue-500 dark:text-white">
+          <span className="w-1.5 h-1.5 rounded-full bg-white/70 inline-block" />
           {todayAuto} AI Generated
         </span>
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300">
-          <span className="w-1.5 h-1.5 rounded-full bg-purple-500 inline-block" />
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-purple-600 text-white dark:bg-purple-500 dark:text-white">
+          <span className="w-1.5 h-1.5 rounded-full bg-white/70 inline-block" />
           {todayManual} Manual
         </span>
       </div>

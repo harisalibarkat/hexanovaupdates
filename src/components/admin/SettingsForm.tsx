@@ -84,6 +84,8 @@ export function SettingsForm({ settings }: Props) {
   const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<TabId>("site");
   const [logoUrl, setLogoUrl] = useState(settings.logo_url ?? "");
+  const [logoUrlLight, setLogoUrlLight] = useState(settings.logo_url_light ?? "");
+  const [logoUrlDark, setLogoUrlDark] = useState(settings.logo_url_dark ?? "");
   const [faviconUrl, setFaviconUrl] = useState(settings.favicon_url ?? "");
 
   const initialGroqKeys = (() => {
@@ -106,8 +108,10 @@ export function SettingsForm({ settings }: Props) {
   return (
     <form action={handleSubmit} className="flex gap-0 min-h-[600px]">
       {/* Hidden inputs for logo/favicon so they're always submitted */}
-      <input type="hidden" name="logo_url"    value={logoUrl} />
-      <input type="hidden" name="favicon_url" value={faviconUrl} />
+      <input type="hidden" name="logo_url"       value={logoUrl} />
+      <input type="hidden" name="logo_url_light" value={logoUrlLight} />
+      <input type="hidden" name="logo_url_dark"  value={logoUrlDark} />
+      <input type="hidden" name="favicon_url"    value={faviconUrl} />
 
       {/* Left tab nav */}
       <aside className="w-44 shrink-0 border-r border-border pr-0 mr-6">
@@ -289,9 +293,18 @@ export function SettingsForm({ settings }: Props) {
 
         <div className={activeTab === "branding" ? "space-y-5" : "hidden"}>
           <TabSection title="Branding">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground block mb-2">Logo</label>
-              <LogoUploader type="logo"    currentUrl={logoUrl}    onUploaded={setLogoUrl} />
+            <p className="text-xs text-muted-foreground -mt-1">
+              Upload separate logos for light and dark theme. If only one is set, it will be used for both themes.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground block mb-2">Logo — Light Theme</label>
+                <LogoUploader type="logo" currentUrl={logoUrlLight} onUploaded={setLogoUrlLight} label="Light Logo" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground block mb-2">Logo — Dark Theme</label>
+                <LogoUploader type="logo" currentUrl={logoUrlDark} onUploaded={setLogoUrlDark} label="Dark Logo" />
+              </div>
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground block mb-2">Favicon</label>
@@ -312,7 +325,7 @@ export function SettingsForm({ settings }: Props) {
           <button
             type="submit"
             disabled={isPending}
-            className="bg-brand text-white text-sm font-semibold px-6 py-2.5 rounded-lg hover:opacity-90 transition-all disabled:opacity-50"
+            className="bg-brand text-brand-foreground text-sm font-semibold px-6 py-2.5 rounded-lg hover:opacity-90 transition-all disabled:opacity-50"
           >
             {isPending ? "Saving…" : "Save Settings"}
           </button>

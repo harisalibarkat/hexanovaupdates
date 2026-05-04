@@ -41,7 +41,7 @@ export function HeroSection({ featuredPost, sidePosts }: Props) {
         </div>
         <div className={`absolute inset-0 bg-gradient-to-t ${gradient} via-black/40 from-black/80`} />
         <div className="relative p-6 sm:p-8">
-          <span className="inline-block bg-brand text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
+          <span className="inline-block bg-brand text-brand-foreground text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
             {categoryLabel(featuredPost.category)}
           </span>
           <h2 className="text-white text-2xl sm:text-3xl font-extrabold leading-tight mb-2 line-clamp-3 group-hover:underline underline-offset-2 decoration-white/40">

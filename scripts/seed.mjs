@@ -38,7 +38,7 @@ const DEFAULT_SETTINGS = [
   { key: "rss_sync_enabled",         value: "true" },
   { key: "ai_generation_enabled",    value: "true" },
   { key: "max_posts_per_run",        value: "5" },
-  { key: "groq_model",               value: "llama-3.3-70b-versatile" },
+  { key: "groq_model",               value: "llama-3.1-8b-instant" },
   { key: "seo_optimization_enabled", value: "false" },
   { key: "seo_batch_size",           value: "3" },
   { key: "seo_cooldown_days",        value: "7" },
@@ -47,7 +47,7 @@ const DEFAULT_SETTINGS = [
 async function seed() {
   console.log("Seeding database...");
 
-  const adminEmail = process.env.ADMIN_EMAIL ?? "harisali709@gmail.com";
+  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@example.com";
   const adminPassword = process.env.ADMIN_PASSWORD ?? "admin123456";
   const hashedPassword = await bcrypt.hash(adminPassword, 12);
 
@@ -73,11 +73,11 @@ async function seed() {
     await pool.query(
       `INSERT INTO settings (key, value)
        VALUES ($1, $2)
-       ON CONFLICT (key) DO UPDATE SET value = $2`,
+       ON CONFLICT (key) DO NOTHING`,
       [s.key, s.value]
     );
   }
-  console.log("✓ Default settings seeded");
+  console.log("✓ Default settings seeded (existing values preserved)");
 
   await pool.end();
   console.log("Seed complete!");

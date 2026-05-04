@@ -42,7 +42,7 @@ export async function generateArticle(
 
   const completion = await groqChatWithFallback(clients, {
     model,
-    max_tokens: 4096,
+    max_tokens: 2048,
     temperature: 0.7,
     messages: [
       {

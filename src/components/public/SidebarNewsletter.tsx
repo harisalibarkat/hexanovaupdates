@@ -70,11 +70,11 @@ export function SidebarNewsletter() {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full py-2.5 bg-brand text-white font-bold rounded-lg hover:opacity-90 transition-opacity text-sm uppercase tracking-wide disabled:opacity-60 flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-brand text-brand-foreground font-bold rounded-lg hover:opacity-90 transition-opacity text-sm uppercase tracking-wide disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {isPending ? (
               <>
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-brand-foreground/30 border-t-brand-foreground rounded-full animate-spin" />
                 Subscribing…
               </>
             ) : "Subscribe"}

@@ -8,23 +8,26 @@ import { settings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 async function getSiteSettings() {
-  const [adRow, logoRow] = await Promise.all([
+  const [adRow, logoLightRow, logoDarkRow, logoRow] = await Promise.all([
     db.query.settings.findFirst({ where: eq(settings.key, "adsense_publisher_id") }),
+    db.query.settings.findFirst({ where: eq(settings.key, "logo_url_light") }),
+    db.query.settings.findFirst({ where: eq(settings.key, "logo_url_dark") }),
     db.query.settings.findFirst({ where: eq(settings.key, "logo_url") }),
   ]);
   return {
     publisherId: adRow?.value ?? process.env.NEXT_PUBLIC_ADSENSE_ID ?? "",
-    logoUrl: logoRow?.value ?? "",
+    logoUrlLight: logoLightRow?.value || logoRow?.value || "",
+    logoUrlDark: logoDarkRow?.value || logoRow?.value || "",
   };
 }
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const { publisherId, logoUrl } = await getSiteSettings();
+  const { publisherId, logoUrlLight, logoUrlDark } = await getSiteSettings();
 
   return (
     <>
       {publisherId && <AdSense publisherId={publisherId} />}
-      <Header logoUrl={logoUrl || undefined} />
+      <Header logoUrlLight={logoUrlLight || undefined} logoUrlDark={logoUrlDark || undefined} />
       {/* Header banner ad */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2">
         <AdSlot slot="header" className="mb-2" />

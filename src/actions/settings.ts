@@ -19,7 +19,7 @@ const ALLOWED_KEYS = new Set([
   "author_name", "author_bio", "author_avatar_url",
   "social_twitter", "social_facebook", "social_instagram", "social_linkedin", "social_youtube",
   "smtp_host", "smtp_port", "smtp_user", "smtp_pass", "smtp_from_email", "smtp_from_name",
-  "logo_url", "favicon_url",
+  "logo_url", "logo_url_light", "logo_url_dark", "favicon_url",
   "cookie_consent_enabled", "cookie_consent_text",
   "homepage_show_newsletter", "homepage_show_trending", "homepage_show_categories",
 ]);

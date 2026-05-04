@@ -102,8 +102,8 @@ App is live at **http://localhost:3000**
 Admin panel at **http://localhost:3000/admin**
 
 Default admin credentials (change after first login):
-- Email: `harisali709@gmail.com`
-- Password: `admin123456`
+- Email: set via `ADMIN_EMAIL` env var (default: `admin@example.com`)
+- Password: set via `ADMIN_PASSWORD` env var (default: `admin123456`)
 
 ### Windows one-liner (after first setup)
 

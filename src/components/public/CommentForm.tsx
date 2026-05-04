@@ -89,7 +89,7 @@ export function CommentForm({ postId }: CommentFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className="bg-brand text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+          className="bg-brand text-brand-foreground text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {isPending ? "Submitting…" : "Post Comment"}
         </button>

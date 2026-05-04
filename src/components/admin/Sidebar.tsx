@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/actions/auth";
 import { HexaLogo } from "@/components/Logo";
+import { DarkModeToggle } from "@/components/public/DarkModeToggle";
 import { cn } from "@/lib/utils";
 import type { User } from "next-auth";
 
@@ -90,6 +91,10 @@ export function AdminSidebar({ user, isOpen, onClose }: Props) {
 
       {/* Footer */}
       <div className="p-3 border-t border-border space-y-1">
+        <div className="flex items-center justify-between px-3 py-1.5">
+          <span className="text-xs text-muted-foreground">Theme</span>
+          <DarkModeToggle />
+        </div>
         <Link
           href="/sitemap.xml"
           target="_blank"

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { AdminSidebar } from "@/components/admin/Sidebar";
+import { DarkModeToggle } from "@/components/public/DarkModeToggle";
 import type { User } from "next-auth";
 
 interface Props {
@@ -46,9 +47,10 @@ export function AdminShell({ user, children }: Props) {
               <line x1="3" x2="21" y1="18" y2="18"/>
             </svg>
           </button>
-          <span className="font-bold text-sm">
+          <span className="font-bold text-sm flex-1">
             <span className="text-brand">Hexa</span>Nova Admin
           </span>
+          <DarkModeToggle />
         </header>
 
         <main className="flex-1 overflow-auto">

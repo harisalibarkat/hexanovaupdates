@@ -30,7 +30,6 @@ export function LoginForm() {
           name="email"
           required
           autoComplete="email"
-          defaultValue="harisali709@gmail.com"
           className="w-full text-sm border border-border rounded-lg px-3 py-2.5 bg-background focus:outline-none focus:ring-2 focus:ring-brand/30"
         />
       </div>

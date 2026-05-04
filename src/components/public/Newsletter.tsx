@@ -58,11 +58,11 @@ export function Newsletter() {
             <button
               type="submit"
               disabled={isPending}
-              className="px-6 py-2.5 bg-brand text-white font-semibold rounded-xl hover:opacity-90 transition-opacity text-sm whitespace-nowrap disabled:opacity-60 flex items-center gap-2"
+              className="px-6 py-2.5 bg-brand text-brand-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity text-sm whitespace-nowrap disabled:opacity-60 flex items-center gap-2"
             >
               {isPending ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-brand-foreground/30 border-t-brand-foreground rounded-full animate-spin" />
                   Subscribing…
                 </>
               ) : "Subscribe"}

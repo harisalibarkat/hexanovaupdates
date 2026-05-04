@@ -5,16 +5,28 @@ import { CATEGORIES, categoryLabel } from "@/lib/utils";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { LogoFull } from "@/components/Logo";
 import { SearchBar } from "./SearchBar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 interface Props {
-  logoUrl?: string;
+  logoUrlLight?: string;
+  logoUrlDark?: string;
 }
 
-export function Header({ logoUrl }: Props) {
+export function Header({ logoUrlLight, logoUrlDark }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const update = () => setIsDark(document.documentElement.classList.contains("dark"));
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  const logoUrl = isDark ? (logoUrlDark || logoUrlLight) : (logoUrlLight || logoUrlDark);
 
   return (
     <header className="sticky top-0 z-50">

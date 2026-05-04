@@ -68,7 +68,7 @@ export function ManualGenerator() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-xl font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand text-brand-foreground rounded-xl font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
           {pending ? (
             <>
