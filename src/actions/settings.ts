@@ -11,7 +11,7 @@ const ALLOWED_KEYS = new Set([
   "adsense_publisher_id", "ad_slot_header", "ad_slot_in_article", "ad_slot_sidebar", "ad_slot_footer",
   "ad_custom_header", "ads_enabled",
   "auto_publish_enabled", "trend_detection_enabled", "max_posts_per_run", "posts_per_page",
-  "rss_sync_enabled", "ai_generation_enabled", "groq_api_key", "groq_model",
+  "rss_sync_enabled", "ai_generation_enabled", "groq_api_key", "groq_api_keys", "groq_model",
   "seo_optimization_enabled", "seo_batch_size", "seo_cooldown_days",
   "fetch_interval", "fetch_interval_unit", "auto_publish_delay_minutes",
   "unsplash_access_key", "pexels_api_key",

@@ -1,29 +1,16 @@
-import Groq from "groq-sdk";
 import { db } from "@/lib/db";
-import { trends, posts, internalLinks, settings } from "@/lib/db/schema";
+import { trends, posts, internalLinks } from "@/lib/db/schema";
 import { eq, and, ne, sql } from "drizzle-orm";
 import { createSlug, estimateReadingTime, categoryLabel } from "@/lib/utils";
 import { buildStructuredData } from "@/lib/seo/structured-data";
 import { fetchArticleImage } from "@/lib/images/unsplash";
-
-async function getGroqClient(): Promise<Groq> {
-  const row = await db.query.settings.findFirst({ where: eq(settings.key, "groq_api_key") });
-  const apiKey = row?.value || process.env.GROQ_API_KEY || "";
-  return new Groq({ apiKey });
-}
-
-async function getGroqModel(): Promise<string> {
-  const row = await db.query.settings.findFirst({ where: eq(settings.key, "groq_model") });
-  return row?.value || "llama-3.3-70b-versatile";
-}
+import { getGroqClients, getGroqModel, groqChatWithFallback } from "@/lib/ai/groq-client";
 
 function sanitizeJson(raw: string): string {
-  // Extract JSON object, strip markdown code fences
   const fenceMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
   const jsonStr = fenceMatch ? fenceMatch[1] : raw;
   const objMatch = jsonStr.match(/\{[\s\S]*\}/);
   if (!objMatch) throw new Error("No JSON object found in response");
-  // Remove control characters (0x00-0x1F) except \n \r \t
   return objMatch[0].replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
 }
 
@@ -50,10 +37,10 @@ export async function generateArticle(
   category: string
 ): Promise<GeneratedArticle> {
   const categoryName = categoryLabel(category);
-  const groq = await getGroqClient();
+  const clients = await getGroqClients();
   const model = await getGroqModel();
 
-  const completion = await groq.chat.completions.create({
+  const completion = await groqChatWithFallback(clients, {
     model,
     max_tokens: 4096,
     temperature: 0.7,
@@ -85,31 +72,19 @@ Return a JSON object with exactly these fields:
   });
 
   const raw = completion.choices[0].message.content ?? "{}";
-
   return parseGroqJson<GeneratedArticle>(raw);
 }
 
 export async function generateAndSavePost(trendId: string): Promise<string | null> {
-  const trend = await db.query.trends.findFirst({
-    where: eq(trends.id, trendId),
-  });
-
+  const trend = await db.query.trends.findFirst({ where: eq(trends.id, trendId) });
   if (!trend || trend.isProcessed) return null;
 
   try {
-    const article = await generateArticle(
-      trend.title,
-      trend.description ?? "",
-      trend.category
-    );
+    const article = await generateArticle(trend.title, trend.description ?? "", trend.category);
 
     let slug = createSlug(article.title);
-    const existingSlug = await db.query.posts.findFirst({
-      where: eq(posts.slug, slug),
-    });
-    if (existingSlug) {
-      slug = `${slug}-${Date.now()}`;
-    }
+    const existingSlug = await db.query.posts.findFirst({ where: eq(posts.slug, slug) });
+    if (existingSlug) slug = `${slug}-${Date.now()}`;
 
     const structuredData = buildStructuredData({
       title: article.title,
@@ -119,28 +94,29 @@ export async function generateAndSavePost(trendId: string): Promise<string | nul
       publishedAt: new Date(),
     });
 
-    // Always get an image: OG from source → Unsplash → Pexels → Openverse → Picsum
     const imageQuery = `${trend.title} ${categoryLabel(trend.category)}`;
-    const featuredImage = trend.imageUrl ?? await fetchArticleImage(imageQuery);
+    const featuredImage = trend.imageUrl ?? (await fetchArticleImage(imageQuery));
 
-    const [post] = await db.insert(posts).values({
-      title: article.title,
-      slug,
-      excerpt: article.excerpt,
-      content: article.content,
-      category: trend.category,
-      status: "draft",
-      trendId: trend.id,
-      metaTitle: article.metaTitle,
-      metaDescription: article.metaDescription,
-      keywords: article.keywords,
-      featuredImage,
-      readingTime: estimateReadingTime(article.content),
-      structuredData,
-    }).returning();
+    const [post] = await db
+      .insert(posts)
+      .values({
+        title: article.title,
+        slug,
+        excerpt: article.excerpt,
+        content: article.content,
+        category: trend.category,
+        status: "draft",
+        trendId: trend.id,
+        metaTitle: article.metaTitle,
+        metaDescription: article.metaDescription,
+        keywords: article.keywords,
+        featuredImage,
+        readingTime: estimateReadingTime(article.content),
+        structuredData,
+      })
+      .returning();
 
     await db.update(trends).set({ isProcessed: true }).where(eq(trends.id, trendId));
-
     await addInternalLinks(post.id, trend.category);
 
     return post.id;
@@ -152,20 +128,15 @@ export async function generateAndSavePost(trendId: string): Promise<string | nul
 
 async function addInternalLinks(newPostId: string, category: string) {
   const relatedPosts = await db.query.posts.findMany({
-    where: and(
-      eq(posts.category, category as "tech"),
-      eq(posts.status, "published"),
-      ne(posts.id, newPostId)
-    ),
+    where: and(eq(posts.category, category as "tech"), eq(posts.status, "published"), ne(posts.id, newPostId)),
     orderBy: sql`random()`,
     limit: 3,
   });
 
   for (const related of relatedPosts) {
-    await db.insert(internalLinks).values({
-      sourcePostId: newPostId,
-      targetPostId: related.id,
-      anchorText: related.title.slice(0, 60),
-    }).onConflictDoNothing();
+    await db
+      .insert(internalLinks)
+      .values({ sourcePostId: newPostId, targetPostId: related.id, anchorText: related.title.slice(0, 60) })
+      .onConflictDoNothing();
   }
 }

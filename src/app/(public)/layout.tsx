@@ -7,18 +7,24 @@ import { db } from "@/lib/db";
 import { settings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
-async function getAdSenseId() {
-  const row = await db.query.settings.findFirst({ where: eq(settings.key, "adsense_publisher_id") });
-  return row?.value ?? process.env.NEXT_PUBLIC_ADSENSE_ID ?? "";
+async function getSiteSettings() {
+  const [adRow, logoRow] = await Promise.all([
+    db.query.settings.findFirst({ where: eq(settings.key, "adsense_publisher_id") }),
+    db.query.settings.findFirst({ where: eq(settings.key, "logo_url") }),
+  ]);
+  return {
+    publisherId: adRow?.value ?? process.env.NEXT_PUBLIC_ADSENSE_ID ?? "",
+    logoUrl: logoRow?.value ?? "",
+  };
 }
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const publisherId = await getAdSenseId();
+  const { publisherId, logoUrl } = await getSiteSettings();
 
   return (
     <>
       {publisherId && <AdSense publisherId={publisherId} />}
-      <Header />
+      <Header logoUrl={logoUrl || undefined} />
       {/* Header banner ad */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2">
         <AdSlot slot="header" className="mb-2" />

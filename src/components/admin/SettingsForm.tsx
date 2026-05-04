@@ -4,6 +4,63 @@ import { useTransition, useState } from "react";
 import { saveSettings } from "@/actions/settings";
 import { LogoUploader } from "@/components/admin/LogoUploader";
 
+function GroqApiKeys({ initialKeys }: { initialKeys: string[] }) {
+  const [keys, setKeys] = useState<string[]>(initialKeys.length > 0 ? initialKeys : [""]);
+
+  const update = (i: number, val: string) => {
+    const next = [...keys];
+    next[i] = val;
+    setKeys(next);
+  };
+
+  const remove = (i: number) => setKeys(keys.filter((_, j) => j !== i));
+
+  return (
+    <div className="space-y-2">
+      <label className="text-xs font-medium text-muted-foreground block">Groq API Keys</label>
+      <input type="hidden" name="groq_api_keys" value={JSON.stringify(keys.filter((k) => k.trim()))} />
+      <div className="space-y-2">
+        {keys.map((key, i) => (
+          <div key={i} className="flex gap-2">
+            <input
+              type="password"
+              value={key}
+              onChange={(e) => update(i, e.target.value)}
+              placeholder={`gsk_… Key ${i + 1}`}
+              className="flex-1 text-sm border border-border rounded-lg px-3 py-2 bg-background focus:outline-none focus:ring-2 focus:ring-brand/30"
+            />
+            {keys.length > 1 && (
+              <button
+                type="button"
+                onClick={() => remove(i)}
+                className="px-3 py-2 text-xs text-red-600 hover:text-red-700 border border-border rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                aria-label="Remove key"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => setKeys([...keys, ""])}
+        className="text-xs text-brand hover:underline font-medium"
+      >
+        + Add another key
+      </button>
+      <p className="text-xs text-muted-foreground">
+        If a key hits its rate limit, the next key is used automatically.
+        Get free keys at{" "}
+        <a href="https://console.groq.com" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
+          console.groq.com
+        </a>
+        .
+      </p>
+    </div>
+  );
+}
+
 interface Props {
   settings: Record<string, string>;
 }
@@ -28,6 +85,14 @@ export function SettingsForm({ settings }: Props) {
   const [activeTab, setActiveTab] = useState<TabId>("site");
   const [logoUrl, setLogoUrl] = useState(settings.logo_url ?? "");
   const [faviconUrl, setFaviconUrl] = useState(settings.favicon_url ?? "");
+
+  const initialGroqKeys = (() => {
+    try {
+      const parsed = JSON.parse(settings.groq_api_keys ?? "[]");
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed as string[];
+    } catch {}
+    return settings.groq_api_key ? [settings.groq_api_key] : [];
+  })();
   const [saved, setSaved] = useState(false);
 
   function handleSubmit(fd: FormData) {
@@ -91,11 +156,8 @@ export function SettingsForm({ settings }: Props) {
             <p className="text-xs text-muted-foreground">
               Disable RSS Feed Syncing to stop fetching new trends. Disable AI Article Writing to stop generating articles.
             </p>
-            <Field name="groq_api_key" label="Groq API Key"   defaultValue={settings.groq_api_key ?? ""} placeholder="gsk_… (leave blank to use server env var)" type="password" />
-            <Field name="groq_model"   label="Groq Model"     defaultValue={settings.groq_model   ?? "llama-3.3-70b-versatile"} placeholder="llama-3.3-70b-versatile" />
-            <p className="text-xs text-muted-foreground">
-              Get a free key at <a href="https://console.groq.com" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">console.groq.com</a>.
-            </p>
+            <GroqApiKeys initialKeys={initialGroqKeys} />
+            <Field name="groq_model" label="Groq Model" defaultValue={settings.groq_model ?? "llama-3.3-70b-versatile"} placeholder="llama-3.3-70b-versatile" />
           </TabSection>
         </div>
 

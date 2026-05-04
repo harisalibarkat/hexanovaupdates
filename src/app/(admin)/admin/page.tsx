@@ -5,6 +5,7 @@ import { StatsCard } from "@/components/admin/StatsCard";
 import { SuggestedNews } from "@/components/admin/SuggestedNews";
 import { ManualGenerator } from "@/components/admin/ManualGenerator";
 import { BulkActions } from "@/components/admin/BulkActions";
+import { ArticleActivity } from "@/components/admin/ArticleActivity";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
@@ -71,10 +72,11 @@ export default async function DashboardPage() {
         <StatsCard title="Failed" value={data.failedPosts} icon="activity" variant={data.failedPosts > 0 ? "danger" : "default"} />
       </div>
 
-      {/* Main grid: Suggested News + Manual Generator */}
+      {/* Main grid: Suggested News + Sidebar tools */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2">
+        <div className="xl:col-span-2 space-y-6">
           <SuggestedNews trends={data.unprocessedTrends} />
+          <ArticleActivity />
         </div>
         <div className="space-y-6">
           <ManualGenerator />

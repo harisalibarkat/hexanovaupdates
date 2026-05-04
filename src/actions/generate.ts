@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { posts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import Groq from "groq-sdk";
+import { getGroqClients, getGroqModel, groqChatWithFallback } from "@/lib/ai/groq-client";
 import { createSlug, estimateReadingTime, categoryLabel } from "@/lib/utils";
 import { buildStructuredData } from "@/lib/seo/structured-data";
 import { fetchArticleImage } from "@/lib/images/unsplash";
@@ -53,18 +53,17 @@ export async function generateArticleFromTopic(
     category: formData.get("category"),
   });
 
-  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
   const catName = categoryLabel(parsed.category);
+  const [clients, model] = await Promise.all([getGroqClients(), getGroqModel()]);
 
-  const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+  const completion = await groqChatWithFallback(clients, {
+    model,
     max_tokens: 4096,
     temperature: 0.7,
     messages: [
       {
         role: "system",
-        content:
-          "You are an expert SEO content writer for HexaNovaUpdates. Respond with valid JSON only.",
+        content: "You are an expert SEO content writer for HexaNovaUpdates. Respond with valid JSON only.",
       },
       {
         role: "user",

@@ -28,8 +28,10 @@ export function LogoUploader({ type, currentUrl, onUploaded }: Props) {
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await res.json() as { url?: string; error?: string };
       if (!res.ok || data.error) throw new Error(data.error ?? "Upload failed");
-      setPreview(data.url!);
-      onUploaded(data.url!);
+      const cleanUrl = data.url!;
+      // Cache-buster in preview only; stored URL stays clean so it stays valid after rebuilds
+      setPreview(`${cleanUrl}?v=${Date.now()}`);
+      onUploaded(cleanUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

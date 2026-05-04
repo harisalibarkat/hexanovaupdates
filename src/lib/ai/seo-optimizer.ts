@@ -1,8 +1,8 @@
-import Groq from "groq-sdk";
 import { db } from "@/lib/db";
-import { posts, settings } from "@/lib/db/schema";
+import { posts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import type { Post } from "@/lib/db/schema";
+import { getGroqClients, getGroqModel, groqChatWithFallback } from "@/lib/ai/groq-client";
 
 // ─── Scoring ─────────────────────────────────────────────────────────────────
 
@@ -97,15 +97,6 @@ export function computeSeoScore(post: Post): SeoScore {
 
 // ─── Groq-powered optimizer ───────────────────────────────────────────────────
 
-async function getGroqClient(): Promise<{ client: Groq; model: string }> {
-  const [keyRow, modelRow] = await Promise.all([
-    db.query.settings.findFirst({ where: eq(settings.key, "groq_api_key") }),
-    db.query.settings.findFirst({ where: eq(settings.key, "groq_model") }),
-  ]);
-  const apiKey = keyRow?.value || process.env.GROQ_API_KEY || "";
-  const model  = modelRow?.value || "llama-3.3-70b-versatile";
-  return { client: new Groq({ apiKey }), model };
-}
 
 interface OptimizedSeoFields {
   metaTitle: string;
@@ -115,16 +106,15 @@ interface OptimizedSeoFields {
 }
 
 export async function optimizeSeoFields(post: Post): Promise<OptimizedSeoFields> {
-  const { client, model } = await getGroqClient();
+  const [clients, model] = await Promise.all([getGroqClients(), getGroqModel()]);
 
-  // Trim content to save tokens — first 600 chars is enough for context
   const contentPreview = post.content
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 600);
 
-  const completion = await client.chat.completions.create({
+  const completion = await groqChatWithFallback(clients, {
     model,
     max_tokens: 600,
     temperature: 0.4,

@@ -8,7 +8,11 @@ import { SearchBar } from "./SearchBar";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 
-export function Header() {
+interface Props {
+  logoUrl?: string;
+}
+
+export function Header({ logoUrl }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -19,7 +23,12 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             <Link href="/" className="flex-shrink-0 hover:opacity-80 transition-opacity">
-              <LogoFull />
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="Site logo" className="h-10 w-auto object-contain" />
+              ) : (
+                <LogoFull />
+              )}
             </Link>
 
             <div className="flex items-center gap-2">
