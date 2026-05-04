@@ -75,7 +75,7 @@ export function PostsTable({ posts, page, hasMore }: Props) {
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">Title</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">Category</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
-              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Date</th>
+              <th className="text-left px-4 py-3 font-medium text-muted-foreground">Dates / Source</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">Actions</th>
               <th className="text-left px-4 py-3 font-medium text-muted-foreground">Edit</th>
             </tr>
@@ -100,8 +100,26 @@ export function PostsTable({ posts, page, hasMore }: Props) {
                     {post.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground text-xs">
-                  {formatDate(post.createdAt)}
+                <td className="px-4 py-3 text-xs space-y-0.5">
+                  <div className="text-muted-foreground">
+                    <span className="font-medium text-foreground/60">Created</span>{" "}
+                    {formatDate(post.createdAt)}
+                  </div>
+                  <div className="text-muted-foreground">
+                    <span className="font-medium text-foreground/60">Published</span>{" "}
+                    {post.publishedAt ? formatDate(post.publishedAt) : <span className="italic">—</span>}
+                  </div>
+                  <div className="mt-1">
+                    {post.trendId ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                        AI
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300">
+                        Manual
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">

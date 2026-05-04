@@ -12,6 +12,7 @@ export function LogoUploader({ type, currentUrl, onUploaded }: Props) {
   const ref = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(currentUrl ?? "");
+  const [imgBroken, setImgBroken] = useState(false);
   const [error, setError] = useState("");
 
   async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -29,6 +30,7 @@ export function LogoUploader({ type, currentUrl, onUploaded }: Props) {
       const data = await res.json() as { url?: string; error?: string };
       if (!res.ok || data.error) throw new Error(data.error ?? "Upload failed");
       const cleanUrl = data.url!;
+      setImgBroken(false);
       // Cache-buster in preview only; stored URL stays clean so it stays valid after rebuilds
       setPreview(`${cleanUrl}?v=${Date.now()}`);
       onUploaded(cleanUrl);
@@ -42,10 +44,15 @@ export function LogoUploader({ type, currentUrl, onUploaded }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-4">
-        {preview && (
+        {preview && !imgBroken && (
           <div className="w-16 h-16 rounded-xl border border-border bg-muted flex items-center justify-center overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={preview} alt={type} className="max-w-full max-h-full object-contain" />
+            <img
+              src={preview}
+              alt={type}
+              className="max-w-full max-h-full object-contain"
+              onError={() => setImgBroken(true)}
+            />
           </div>
         )}
         <div>

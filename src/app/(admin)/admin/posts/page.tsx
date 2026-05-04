@@ -4,6 +4,7 @@ import { desc, eq, and, ilike } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { PostsTable } from "@/components/admin/PostsTable";
 import { BackfillButton } from "@/components/admin/BackfillButton";
+import { ArticleActivity } from "@/components/admin/ArticleActivity";
 
 export const metadata = { title: "Posts Manager" };
 
@@ -67,6 +68,11 @@ export default async function PostsPage({ searchParams }: Props) {
       </form>
 
       <PostsTable posts={pagePosts} page={page} hasMore={hasMore} />
+
+      {/* Article activity stats — separate module */}
+      <div className="mt-8">
+        <ArticleActivity />
+      </div>
     </div>
   );
 }

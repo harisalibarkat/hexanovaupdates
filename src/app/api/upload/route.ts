@@ -32,7 +32,9 @@ export async function POST(req: NextRequest) {
   const filename = type === "favicon" ? `favicon.${ext}` : `logo.${ext}`;
 
   try {
-    const uploadsDir = join(process.cwd(), "public", "uploads");
+    // Write to file-uploads/ (outside public/) so Next.js dev-mode doesn't
+    // trigger a page refresh when the file lands, which would reset React state.
+    const uploadsDir = join(process.cwd(), "file-uploads");
     await mkdir(uploadsDir, { recursive: true });
 
     const bytes = await file.arrayBuffer();

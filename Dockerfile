@@ -28,8 +28,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/scripts/migrate.mjs ./scripts/mig
 COPY --from=builder --chown=nextjs:nodejs /app/scripts/seed.mjs ./scripts/seed.mjs
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
-# Ensure the uploads directory exists and is owned by the app user
-RUN mkdir -p /app/public/uploads && chown nextjs:nodejs /app/public/uploads
+# Ensure the uploads directories are writable by the app user
+RUN mkdir -p /app/file-uploads /app/public/uploads && chown nextjs:nodejs /app/file-uploads /app/public/uploads
 
 USER nextjs
 EXPOSE 3000
