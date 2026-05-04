@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/actions/auth";
 import { HexaLogo } from "@/components/Logo";
+import { cn } from "@/lib/utils";
 import type { User } from "next-auth";
 
 const navItems = [
@@ -28,13 +29,13 @@ export function AdminSidebar({ user, isOpen, onClose }: Props) {
 
   return (
     <aside
-      className={[
+      className={cn(
         "fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto",
         "w-72 lg:w-64 bg-card border-r border-border flex flex-col",
         "transition-transform duration-300 ease-in-out",
         "lg:translate-x-0",
         isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full",
-      ].join(" ")}
+      )}
     >
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center justify-between">

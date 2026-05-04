@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { posts, trends, rssSources } from "@/lib/db/schema";
 import { eq, count, desc, and } from "drizzle-orm";
+import { Suspense } from "react";
 import { StatsCard } from "@/components/admin/StatsCard";
 import { SuggestedNews } from "@/components/admin/SuggestedNews";
 import { ManualGenerator } from "@/components/admin/ManualGenerator";
@@ -76,7 +77,9 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
           <SuggestedNews trends={data.unprocessedTrends} />
-          <ArticleActivity />
+          <Suspense fallback={<div className="bg-card rounded-xl border border-border p-6 animate-pulse h-64" />}>
+            <ArticleActivity />
+          </Suspense>
         </div>
         <div className="space-y-6">
           <ManualGenerator />
