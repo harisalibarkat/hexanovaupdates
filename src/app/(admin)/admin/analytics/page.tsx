@@ -22,13 +22,28 @@ interface DayView {
   views: number;
 }
 
+interface CountryView {
+  country: string | null;
+  views: number;
+}
+
+interface CategoryView {
+  category: string;
+  views: number;
+}
+
+interface ReferrerView {
+  referrer: string | null;
+  views: number;
+}
+
 const CAT_BADGE: Record<string, string> = {
-  tech: "bg-blue-100 text-blue-700",
-  celebs: "bg-pink-100 text-pink-700",
-  viral: "bg-orange-100 text-orange-700",
-  finance: "bg-emerald-100 text-emerald-700",
-  health: "bg-green-100 text-green-700",
-  travel: "bg-cyan-100 text-cyan-700",
+  tech: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
+  celebs: "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300",
+  viral: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300",
+  finance: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
+  health: "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300",
+  travel: "bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300",
 };
 
 export default async function AnalyticsPage() {
@@ -38,6 +53,9 @@ export default async function AnalyticsPage() {
   let uniquePostsViewed = 0;
   let topPosts: TopPost[] = [];
   let dailyViews: DayView[] = [];
+  let countryViews: CountryView[] = [];
+  let categoryViews: CategoryView[] = [];
+  let referrerViews: ReferrerView[] = [];
 
   try {
     const todayMidnight = new Date();
@@ -109,6 +127,34 @@ export default async function AnalyticsPage() {
       .orderBy(sql`DATE(${pageViews.viewedAt}) ASC`);
 
     dailyViews = dailyRows.map((r) => ({ date: r.date, views: r.views }));
+
+    // Views by country/region
+    const countryRows = await db
+      .select({ country: pageViews.country, views: count() })
+      .from(pageViews)
+      .groupBy(pageViews.country)
+      .orderBy(desc(count()))
+      .limit(10);
+    countryViews = countryRows.map((r) => ({ country: r.country, views: r.views }));
+
+    // Views by category (join with posts)
+    const categoryRows = await db
+      .select({ category: posts.category, views: count() })
+      .from(pageViews)
+      .innerJoin(posts, eq(pageViews.postId, posts.id))
+      .groupBy(posts.category)
+      .orderBy(desc(count()));
+    categoryViews = categoryRows.map((r) => ({ category: r.category, views: r.views }));
+
+    // Top referrers (last 14 days)
+    const referrerRows = await db
+      .select({ referrer: pageViews.referrer, views: count() })
+      .from(pageViews)
+      .where(gte(pageViews.viewedAt, fourteenDaysAgo))
+      .groupBy(pageViews.referrer)
+      .orderBy(desc(count()))
+      .limit(8);
+    referrerViews = referrerRows.map((r) => ({ referrer: r.referrer, views: r.views }));
   } catch {
     // Graceful fallback — all values already initialised to 0 / []
   }
@@ -167,6 +213,126 @@ export default async function AnalyticsPage() {
             })}
           </div>
         )}
+      </div>
+
+      {/* Views by Region & Category */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* By Country */}
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="font-bold text-lg">Views by Region</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Based on IP geolocation recorded at view time.{" "}
+              {countryViews.every((r) => r.country === null) && "No location data yet — start logging country on page view events."}
+            </p>
+          </div>
+          {countryViews.length === 0 ? (
+            <p className="p-6 text-muted-foreground text-sm">No data yet.</p>
+          ) : (() => {
+            const maxViews = Math.max(1, ...countryViews.map((r) => r.views));
+            return (
+              <ul className="divide-y divide-border">
+                {countryViews.map((row) => (
+                  <li key={row.country ?? "unknown"} className="flex items-center gap-3 px-6 py-3">
+                    <span className="text-sm font-medium w-24 shrink-0 truncate">
+                      {row.country ? row.country.toUpperCase() : "Unknown"}
+                    </span>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-brand/70 rounded-full"
+                        style={{ width: `${Math.round((row.views / maxViews) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-sm tabular-nums font-bold w-12 text-right shrink-0">
+                      {row.views.toLocaleString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            );
+          })()}
+        </div>
+
+        {/* By Category */}
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="font-bold text-lg">Views by Category</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Article page views grouped by content category.</p>
+          </div>
+          {categoryViews.length === 0 ? (
+            <p className="p-6 text-muted-foreground text-sm">No data yet.</p>
+          ) : (() => {
+            const maxViews = Math.max(1, ...categoryViews.map((r) => r.views));
+            const totalCatViews = categoryViews.reduce((s, r) => s + r.views, 0);
+            return (
+              <ul className="divide-y divide-border">
+                {categoryViews.map((row) => (
+                  <li key={row.category} className="flex items-center gap-3 px-6 py-3">
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full w-20 text-center shrink-0 ${CAT_BADGE[row.category] ?? "bg-muted text-foreground"}`}>
+                      {categoryLabel(row.category)}
+                    </span>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${Math.round((row.views / maxViews) * 100)}%`,
+                          background: "oklch(var(--brand) / 0.7)",
+                        }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground w-10 text-right shrink-0">
+                      {Math.round((row.views / totalCatViews) * 100)}%
+                    </span>
+                    <span className="text-sm tabular-nums font-bold w-12 text-right shrink-0">
+                      {row.views.toLocaleString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            );
+          })()}
+        </div>
+      </div>
+
+      {/* Top Referrers */}
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="font-bold text-lg">Top Traffic Sources</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Referrer domains from the last 14 days.</p>
+        </div>
+        {referrerViews.length === 0 ? (
+          <p className="p-6 text-muted-foreground text-sm">No referrer data yet.</p>
+        ) : (() => {
+          const maxViews = Math.max(1, ...referrerViews.map((r) => r.views));
+          return (
+            <ul className="divide-y divide-border">
+              {referrerViews.map((row, i) => {
+                let domain = "Direct / None";
+                if (row.referrer) {
+                  try {
+                    domain = new URL(row.referrer).hostname.replace("www.", "");
+                  } catch {
+                    domain = row.referrer;
+                  }
+                }
+                return (
+                  <li key={i} className="flex items-center gap-3 px-6 py-3">
+                    <span className="text-sm font-medium w-40 shrink-0 truncate">{domain}</span>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-brand/60 rounded-full"
+                        style={{ width: `${Math.round((row.views / maxViews) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-sm tabular-nums font-bold w-12 text-right shrink-0">
+                      {row.views.toLocaleString()}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          );
+        })()}
       </div>
 
       {/* Top Articles */}

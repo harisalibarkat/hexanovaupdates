@@ -65,10 +65,10 @@ export function SettingsForm({ settings }: Props) {
         </nav>
       </aside>
 
-      {/* Content */}
-      <div className="flex-1 min-w-0 space-y-5 max-w-2xl">
+      {/* Content — all tabs always rendered, hidden ones excluded from layout but present in DOM so all fields submit */}
+      <div className="flex-1 min-w-0 max-w-2xl">
 
-        {activeTab === "site" && (
+        <div className={activeTab === "site" ? "space-y-5" : "hidden"}>
           <TabSection title="Site Settings">
             <Field name="site_name"        label="Site Name"         defaultValue={settings.site_name        ?? "HexaNovaUpdates"} />
             <Field name="site_tagline"     label="Tagline"           defaultValue={settings.site_tagline     ?? ""} />
@@ -80,9 +80,9 @@ export function SettingsForm({ settings }: Props) {
             <Field name="default_og_image"          label="Default OG Image URL"         defaultValue={settings.default_og_image          ?? ""} placeholder="https://..." />
             <Field name="twitter_handle"            label="Twitter / X Handle"           defaultValue={settings.twitter_handle            ?? ""} placeholder="@yourhandle" />
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "ai" && (
+        <div className={activeTab === "ai" ? "space-y-5" : "hidden"}>
           <TabSection title="AI & Content Generation">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Toggle name="rss_sync_enabled"      label="RSS Feed Syncing"    defaultChecked={settings.rss_sync_enabled      !== "false"} />
@@ -97,9 +97,9 @@ export function SettingsForm({ settings }: Props) {
               Get a free key at <a href="https://console.groq.com" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">console.groq.com</a>.
             </p>
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "seo" && (
+        <div className={activeTab === "seo" ? "space-y-5" : "hidden"}>
           <TabSection title="SEO Auto-Optimization">
             <Toggle
               name="seo_optimization_enabled"
@@ -117,9 +117,9 @@ export function SettingsForm({ settings }: Props) {
               Cooldown prevents re-optimizing the same article within N days. Use <a href="/admin/seo" className="text-brand hover:underline">Admin → SEO Optimizer</a> for manual runs.
             </p>
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "automation" && (
+        <div className={activeTab === "automation" ? "space-y-5" : "hidden"}>
           <TabSection title="Automation">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Toggle name="auto_publish_enabled"    label="Auto-Publish Drafts" defaultChecked={settings.auto_publish_enabled    !== "false"} />
@@ -152,9 +152,9 @@ export function SettingsForm({ settings }: Props) {
               placeholder="0 = immediately"
             />
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "ads" && (
+        <div className={activeTab === "ads" ? "space-y-5" : "hidden"}>
           <TabSection title="Advertising">
             <Toggle name="ads_enabled" label="Enable Ads" defaultChecked={settings.ads_enabled !== "false"} />
             <Field name="adsense_publisher_id" label="AdSense Publisher ID"      defaultValue={settings.adsense_publisher_id ?? ""} placeholder="ca-pub-0000000000000000" />
@@ -171,9 +171,9 @@ export function SettingsForm({ settings }: Props) {
               placeholder='<ins class="adsbygoogle" ...></ins>'
             />
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "images" && (
+        <div className={activeTab === "images" ? "space-y-5" : "hidden"}>
           <TabSection title="Image Sources">
             <p className="text-xs text-muted-foreground">Optional API keys for automatic featured images. Both are free-tier friendly.</p>
             <Field name="unsplash_access_key" label="Unsplash Access Key" defaultValue={settings.unsplash_access_key ?? ""} placeholder="your-unsplash-access-key" />
@@ -182,9 +182,9 @@ export function SettingsForm({ settings }: Props) {
               Unsplash: <a href="https://unsplash.com/developers" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">unsplash.com/developers</a> · Pexels: <a href="https://www.pexels.com/api/" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">pexels.com/api</a>
             </p>
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "comments" && (
+        <div className={activeTab === "comments" ? "space-y-5" : "hidden"}>
           <TabSection title="Comments">
             <Toggle name="comments_enabled"    label="Enable Comments"                            defaultChecked={settings.comments_enabled    !== "false"} />
             <Toggle name="comments_moderation" label="Hold for moderation before publishing"      defaultChecked={settings.comments_moderation !== "false"} />
@@ -195,9 +195,9 @@ export function SettingsForm({ settings }: Props) {
             <Toggle name="homepage_show_trending"    label="Show Trending Bar"        defaultChecked={settings.homepage_show_trending    !== "false"} />
             <Toggle name="homepage_show_categories"  label="Show Category Sections"   defaultChecked={settings.homepage_show_categories  !== "false"} />
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "social" && (
+        <div className={activeTab === "social" ? "space-y-5" : "hidden"}>
           <TabSection title="Social Links & Author">
             <Field name="author_name"       label="Author Name"       defaultValue={settings.author_name       ?? ""} />
             <Field name="author_bio"        label="Author Bio"        defaultValue={settings.author_bio        ?? ""} type="textarea" />
@@ -209,9 +209,9 @@ export function SettingsForm({ settings }: Props) {
             <Field name="social_linkedin"  label="LinkedIn URL"     defaultValue={settings.social_linkedin  ?? ""} placeholder="https://linkedin.com/in/yourprofile" />
             <Field name="social_youtube"   label="YouTube URL"      defaultValue={settings.social_youtube   ?? ""} placeholder="https://youtube.com/@yourchannel" />
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "email" && (
+        <div className={activeTab === "email" ? "space-y-5" : "hidden"}>
           <TabSection title="Email / Newsletter (SMTP)">
             <p className="text-xs text-muted-foreground">Configure SMTP to send newsletter emails when articles are published.</p>
             <Field name="smtp_host"       label="SMTP Host"                defaultValue={settings.smtp_host       ?? ""} placeholder="smtp.gmail.com" />
@@ -223,9 +223,9 @@ export function SettingsForm({ settings }: Props) {
             <Field name="smtp_from_email" label="From Email"                    defaultValue={settings.smtp_from_email ?? ""} placeholder="newsletter@yourdomain.com" />
             <Field name="smtp_from_name"  label="From Name"                    defaultValue={settings.smtp_from_name  ?? "HexaNovaUpdates"} />
           </TabSection>
-        )}
+        </div>
 
-        {activeTab === "branding" && (
+        <div className={activeTab === "branding" ? "space-y-5" : "hidden"}>
           <TabSection title="Branding">
             <div>
               <label className="text-xs font-medium text-muted-foreground block mb-2">Logo</label>
@@ -243,7 +243,7 @@ export function SettingsForm({ settings }: Props) {
             />
             <Toggle name="cookie_consent_enabled" label="Show Cookie Consent Banner" defaultChecked={settings.cookie_consent_enabled !== "false"} />
           </TabSection>
-        )}
+        </div>
 
         {/* Sticky save bar */}
         <div className="sticky bottom-0 bg-background border-t border-border -mx-0 px-0 py-3 flex items-center gap-3">
