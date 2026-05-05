@@ -3,11 +3,12 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { db } from "@/lib/db";
-import { posts, internalLinks } from "@/lib/db/schema";
+import { posts, internalLinks, settings } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { CATEGORIES, formatDate } from "@/lib/utils";
 import { buildPostMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbSchema } from "@/lib/seo/structured-data";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { ReadingProgress } from "@/components/public/ReadingProgress";
 import { ShareButtons } from "@/components/public/ShareButtons";
 import { Newsletter } from "@/components/public/Newsletter";
@@ -63,6 +64,11 @@ export default async function ArticlePage({ params }: Props) {
     .set({ viewCount: (post.viewCount ?? 0) + 1 })
     .where(eq(posts.id, post.id))
     .catch(() => {});
+
+  const disclosureSetting = await db.query.settings.findFirst({
+    where: eq(settings.key, "ai_content_disclosure"),
+  });
+  const showAiBadge = disclosureSetting?.value === "true" && post.trendId !== null;
 
   const linkedPosts = await db.query.internalLinks.findMany({
     where: eq(internalLinks.sourcePostId, post.id),
@@ -153,6 +159,16 @@ export default async function ArticlePage({ params }: Props) {
                   {post.viewCount.toLocaleString()} views
                 </span>
               )}
+
+              {showAiBadge && (
+                <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/>
+                    <circle cx="7.5" cy="14.5" r="1.5"/><circle cx="16.5" cy="14.5" r="1.5"/>
+                  </svg>
+                  AI-Assisted Content
+                </span>
+              )}
             </div>
 
             {/* Featured image */}
@@ -170,27 +186,13 @@ export default async function ArticlePage({ params }: Props) {
             )}
 
             {/* In-article ad */}
-            <div className="my-8 flex justify-center">
-              <ins
-                className="adsbygoogle"
-                style={{ display: "block", textAlign: "center" }}
-                data-ad-layout="in-article"
-                data-ad-format="fluid"
-                data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_ID}
-                data-ad-slot="1234567890"
-              />
-            </div>
+            <AdSlot slot="in_article" className="my-8" />
 
             {/* Article body */}
             <div
               className="prose-content text-foreground leading-relaxed"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
-
-            {/* Advertisement placeholder */}
-            <div className="my-10 p-5 bg-muted/40 border border-dashed border-border/60 rounded-2xl text-center text-sm text-muted-foreground">
-              Advertisement
-            </div>
 
             {/* Keywords / tags */}
             {post.keywords && post.keywords.length > 0 && (

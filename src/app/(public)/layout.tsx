@@ -12,6 +12,7 @@ import { inArray } from "drizzle-orm";
 
 const SETTING_KEYS = [
   "adsense_publisher_id",
+  "ads_enabled",
   "logo_url_light",
   "logo_url_dark",
   "logo_url",
@@ -32,6 +33,7 @@ async function getSiteSettings() {
 
   return {
     publisherId:          map.adsense_publisher_id       ?? process.env.NEXT_PUBLIC_ADSENSE_ID ?? "",
+    adsEnabled:           map.ads_enabled                !== "false",
     logoUrlLight:         map.logo_url_light              || map.logo_url || "",
     logoUrlDark:          map.logo_url_dark               || map.logo_url || "",
     gaId:                 map.google_analytics_id         ?? "",
@@ -43,11 +45,12 @@ async function getSiteSettings() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { googleVerification, bingVerification, yandexVerification } = await getSiteSettings();
+  const { googleVerification, bingVerification, yandexVerification, publisherId } = await getSiteSettings();
 
   const other: Record<string, string> = {};
-  if (bingVerification)  other["msvalidate.01"]       = bingVerification;
-  if (yandexVerification) other["yandex-verification"] = yandexVerification;
+  if (bingVerification)  other["msvalidate.01"]           = bingVerification;
+  if (yandexVerification) other["yandex-verification"]    = yandexVerification;
+  if (publisherId)        other["google-adsense-account"] = publisherId;
 
   return {
     verification: {
@@ -58,7 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const { publisherId, logoUrlLight, logoUrlDark, gaId, gtmId } = await getSiteSettings();
+  const { publisherId, adsEnabled, logoUrlLight, logoUrlDark, gaId, gtmId } = await getSiteSettings();
 
   return (
     <>
@@ -66,7 +69,8 @@ export default async function PublicLayout({ children }: { children: React.React
       {gaId  && <GoogleAnalytics gaId={gaId} />}
       {gtmId && <GoogleTagManager gtmId={gtmId} />}
 
-      {publisherId && <AdSense publisherId={publisherId} />}
+      {/* AdSense script — only when publisher ID is set and ads are enabled */}
+      {publisherId && adsEnabled && <AdSense publisherId={publisherId} />}
 
       <Header logoUrlLight={logoUrlLight || undefined} logoUrlDark={logoUrlDark || undefined} />
 

@@ -304,21 +304,90 @@ export function SettingsForm({ settings }: Props) {
         </div>
 
         <div className={activeTab === "ads" ? "space-y-5" : "hidden"}>
-          <TabSection title="Advertising">
-            <Toggle name="ads_enabled" label="Enable Ads" defaultChecked={settings.ads_enabled !== "false"} />
-            <Field name="adsense_publisher_id" label="AdSense Publisher ID"      defaultValue={settings.adsense_publisher_id ?? ""} placeholder="ca-pub-0000000000000000" />
-            <p className="text-xs text-muted-foreground">Leave slot fields empty to hide that ad zone.</p>
-            <Field name="ad_slot_header"     label="Header Banner Ad Slot ID"    defaultValue={settings.ad_slot_header     ?? ""} placeholder="1234567890" />
-            <Field name="ad_slot_in_article" label="In-Article Ad Slot ID"       defaultValue={settings.ad_slot_in_article ?? ""} placeholder="1234567890" />
-            <Field name="ad_slot_sidebar"    label="Sidebar Ad Slot ID"          defaultValue={settings.ad_slot_sidebar    ?? ""} placeholder="1234567890" />
-            <Field name="ad_slot_footer"     label="Footer Banner Ad Slot ID"    defaultValue={settings.ad_slot_footer     ?? ""} placeholder="1234567890" />
+          <TabSection title="Master Control">
+            <Toggle name="ads_enabled" label="Enable Ads (site-wide)" defaultChecked={settings.ads_enabled !== "false"} />
+            <p className="text-xs text-muted-foreground">
+              When disabled, all ad zones are hidden across the entire site and the AdSense script does not load.
+              When enabled, each zone shows a placeholder until its Slot ID is configured.
+            </p>
+          </TabSection>
+
+          <TabSection title="AdSense Configuration">
+            <Field
+              name="adsense_publisher_id"
+              label="AdSense Publisher ID"
+              defaultValue={settings.adsense_publisher_id ?? ""}
+              placeholder="ca-pub-0000000000000000"
+            />
+            <div className="rounded-lg bg-muted/50 border border-border p-3 space-y-1.5 text-xs text-muted-foreground">
+              <p className="font-semibold text-foreground/70">Automatic setup — no extra steps needed:</p>
+              <p>
+                ✓ <strong>ads.txt</strong> — automatically generated at{" "}
+                <a href="/ads.txt" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">/ads.txt</a>{" "}
+                as soon as Publisher ID is saved. This verifies your ownership with Google and ad networks.
+              </p>
+              <p>
+                ✓ <strong>Verification meta tag</strong> — <code className="bg-muted px-1 rounded">google-adsense-account</code> meta tag is injected into every page head automatically.
+              </p>
+              <p>
+                ✓ <strong>Auto Ads</strong> — the AdSense script is loaded globally. To enable/disable Auto Ads (Google algorithmically placing ads anywhere on the page), go to your{" "}
+                <a href="https://adsense.google.com" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">AdSense dashboard → Ads → Auto ads</a>.
+              </p>
+            </div>
+          </TabSection>
+
+          <TabSection title="Manual Ad Slots">
+            <p className="text-xs text-muted-foreground -mt-1">
+              Each slot shows a placeholder on the site when ads are enabled but no Slot ID is set.
+              Add the Slot ID from your AdSense account to start serving real ads in that position.
+            </p>
+
+            <div className="space-y-4">
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-blue-400 inline-block" />
+                  Header Banner — top of every page (728×90 leaderboard)
+                </div>
+                <Field name="ad_slot_header" label="Header Slot ID" defaultValue={settings.ad_slot_header ?? ""} placeholder="1234567890" />
+              </div>
+
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />
+                  In-Article — inside article content, before the article body
+                </div>
+                <Field name="ad_slot_in_article" label="In-Article Slot ID" defaultValue={settings.ad_slot_in_article ?? ""} placeholder="1234567890" />
+              </div>
+
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-purple-400 inline-block" />
+                  Sidebar — right sidebar on article pages (300×250 rectangle)
+                </div>
+                <Field name="ad_slot_sidebar" label="Sidebar Slot ID" defaultValue={settings.ad_slot_sidebar ?? ""} placeholder="1234567890" />
+              </div>
+
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
+                  Footer Banner — above site footer on every page (728×90 leaderboard)
+                </div>
+                <Field name="ad_slot_footer" label="Footer Slot ID" defaultValue={settings.ad_slot_footer ?? ""} placeholder="1234567890" />
+              </div>
+            </div>
+          </TabSection>
+
+          <TabSection title="Custom Header Ad">
             <Field
               name="ad_custom_header"
-              label="Custom Header Ad HTML (overrides AdSense slot above)"
+              label="Custom Header Ad HTML (overrides Header Slot ID above)"
               defaultValue={settings.ad_custom_header ?? ""}
               type="textarea"
-              placeholder='<ins class="adsbygoogle" ...></ins>'
+              placeholder='<ins class="adsbygoogle" data-ad-client="ca-pub-..." data-ad-slot="..." ...></ins>'
             />
+            <p className="text-xs text-muted-foreground">
+              Paste raw ad HTML (from any ad network, not just AdSense). When set, this replaces the header AdSense slot.
+            </p>
           </TabSection>
         </div>
 

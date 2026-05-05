@@ -123,9 +123,9 @@ export async function Footer() {
             </ul>
             <h4 className="text-zinc-600 font-bold text-[10px] uppercase tracking-[0.14em] mb-3">Legal</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors">Cookie Policy</a></li>
+              <li><Link href="/privacy-policy" className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms-of-service" className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors">Terms of Service</Link></li>
+              <li><Link href="/cookie-policy" className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors">Cookie Policy</Link></li>
             </ul>
           </div>
         </div>
@@ -134,8 +134,9 @@ export async function Footer() {
         <div className="mt-12 pt-6 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-600">
           <span>© {year} HexaNovaUpdates. All rights reserved.</span>
           <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-zinc-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-zinc-400 transition-colors">Terms of Service</a>
+            <Link href="/privacy-policy" className="hover:text-zinc-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-zinc-400 transition-colors">Terms of Service</Link>
+            <Link href="/cookie-policy" className="hover:text-zinc-400 transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>
