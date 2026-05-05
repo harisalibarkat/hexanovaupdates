@@ -5,7 +5,7 @@ import { CATEGORIES, categoryLabel } from "@/lib/utils";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { LogoFull } from "@/components/Logo";
 import { SearchBar } from "./SearchBar";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 
 interface Props {
@@ -15,20 +15,11 @@ interface Props {
 
 export function Header({ logoUrlLight, logoUrlDark }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isDark, setIsDark] = useState(
-    () => typeof document !== "undefined" && document.documentElement.classList.contains("dark")
-  );
   const pathname = usePathname();
 
-  useEffect(() => {
-    const update = () => setIsDark(document.documentElement.classList.contains("dark"));
-    update();
-    const observer = new MutationObserver(update);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
-  }, []);
-
-  const logoUrl = isDark ? (logoUrlDark || logoUrlLight) : (logoUrlLight || logoUrlDark);
+  const hasLight = !!logoUrlLight;
+  const hasDark  = !!logoUrlDark;
+  const hasEither = hasLight || hasDark;
 
   return (
     <header className="sticky top-0 z-50">
@@ -37,9 +28,30 @@ export function Header({ logoUrlLight, logoUrlDark }: Props) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             <Link href="/" className="flex-shrink-0 hover:opacity-80 transition-opacity">
-              {logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={logoUrl} alt="Site logo" className="h-10 w-auto object-contain" />
+              {hasEither ? (
+                /*
+                 * CSS-based logo switching: both images are always in the DOM.
+                 * dark:hidden / dark:block respond to the .dark class on <html>
+                 * which the DarkModeToggle adds/removes — no JS state needed.
+                 */
+                <>
+                  {/* Light-mode logo — visible by default, hidden when .dark */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={logoUrlLight || logoUrlDark}
+                    alt="Site logo"
+                    className={`h-10 w-auto object-contain${hasDark ? " dark:hidden" : ""}`}
+                  />
+                  {/* Dark-mode logo — hidden by default, visible when .dark */}
+                  {hasDark && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={logoUrlDark}
+                      alt="Site logo"
+                      className="h-10 w-auto object-contain hidden dark:block"
+                    />
+                  )}
+                </>
               ) : (
                 <LogoFull />
               )}

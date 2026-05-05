@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Make dark: utilities respond to the .dark class on <html>, not just OS preference */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* ── Light mode ─────────────────────────────────────── */
   --color-background:          #ffffff;

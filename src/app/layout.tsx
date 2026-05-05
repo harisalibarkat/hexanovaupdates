@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
+import { db } from "@/lib/db";
+import { settings } from "@/lib/db/schema";
+import { inArray } from "drizzle-orm";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -25,28 +28,41 @@ function resolveBaseUrl(): URL {
   return new URL("https://hexanovaupdates.com");
 }
 
-export const metadata: Metadata = {
-  metadataBase: resolveBaseUrl(),
-  title: {
-    template: "%s | HexaNovaUpdates",
-    default: "HexaNovaUpdates — Trending News & Updates",
-  },
-  description: "AI-powered trending news across tech, celebrities, viral stories, finance, health, and travel.",
-  robots: { index: true, follow: true },
-  icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    apple: "/favicon.svg",
-  },
-  openGraph: {
-    siteName: "HexaNovaUpdates",
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@hexanovaupdates",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const rows = await db
+    .select()
+    .from(settings)
+    .where(inArray(settings.key, ["favicon_url", "site_name", "site_description"]));
+
+  const map = Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]));
+  const faviconUrl = map.favicon_url?.trim() || "/favicon.svg";
+  const siteName   = map.site_name?.trim()   || "HexaNovaUpdates";
+  const siteDesc   = map.site_description?.trim() ||
+    "AI-powered trending news across tech, celebrities, viral stories, finance, health, and travel.";
+
+  return {
+    metadataBase: resolveBaseUrl(),
+    title: {
+      template: `%s | ${siteName}`,
+      default:  `${siteName} — Trending News & Updates`,
+    },
+    description: siteDesc,
+    robots: { index: true, follow: true },
+    icons: {
+      icon: [{ url: faviconUrl }],
+      apple: faviconUrl,
+      shortcut: faviconUrl,
+    },
+    openGraph: {
+      siteName,
+      type: "website",
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+    },
+  };
+}
 
 const themeScript = `
 (function(){
