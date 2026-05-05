@@ -29,12 +29,17 @@ function resolveBaseUrl(): URL {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const rows = await db
-    .select()
-    .from(settings)
-    .where(inArray(settings.key, ["favicon_url", "site_name", "site_description"]));
+  let map: Record<string, string> = {};
+  try {
+    const rows = await db
+      .select()
+      .from(settings)
+      .where(inArray(settings.key, ["favicon_url", "site_name", "site_description"]));
+    map = Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]));
+  } catch {
+    // DB unavailable at build/prerender time — fall back to defaults below
+  }
 
-  const map = Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]));
   const faviconUrl = map.favicon_url?.trim() || "/favicon.svg";
   const siteName   = map.site_name?.trim()   || "HexaNovaUpdates";
   const siteDesc   = map.site_description?.trim() ||
