@@ -16,6 +16,9 @@ const SETTING_KEYS = [
   "logo_url_light",
   "logo_url_dark",
   "logo_url",
+  "favicon_url",
+  "site_name",
+  "site_description",
   "google_analytics_id",
   "google_tag_manager_id",
   "google_site_verification",
@@ -36,6 +39,9 @@ async function getSiteSettings() {
     adsEnabled:           map.ads_enabled                !== "false",
     logoUrlLight:         map.logo_url_light              || map.logo_url || "",
     logoUrlDark:          map.logo_url_dark               || map.logo_url || "",
+    faviconUrl:           map.favicon_url?.trim()         || "",
+    siteName:             map.site_name?.trim()           || "",
+    siteDescription:      map.site_description?.trim()    || "",
     gaId:                 map.google_analytics_id         ?? "",
     gtmId:                map.google_tag_manager_id       ?? "",
     googleVerification:   map.google_site_verification    ?? "",
@@ -45,14 +51,32 @@ async function getSiteSettings() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { googleVerification, bingVerification, yandexVerification, publisherId } = await getSiteSettings();
+  const {
+    googleVerification, bingVerification, yandexVerification,
+    publisherId, faviconUrl, siteName, siteDescription,
+  } = await getSiteSettings();
 
   const other: Record<string, string> = {};
-  if (bingVerification)  other["msvalidate.01"]           = bingVerification;
-  if (yandexVerification) other["yandex-verification"]    = yandexVerification;
-  if (publisherId)        other["google-adsense-account"] = publisherId;
+  if (bingVerification)   other["msvalidate.01"]           = bingVerification;
+  if (yandexVerification) other["yandex-verification"]     = yandexVerification;
+  if (publisherId)        other["google-adsense-account"]  = publisherId;
+
+  const favicon = faviconUrl || "/favicon.svg";
 
   return {
+    // Override root layout defaults with DB values for all public pages
+    ...(siteName ? {
+      title: {
+        template: `%s | ${siteName}`,
+        default:  `${siteName} — Trending News & Updates`,
+      },
+    } : {}),
+    ...(siteDescription ? { description: siteDescription } : {}),
+    icons: {
+      icon:     [{ url: favicon }],
+      apple:    favicon,
+      shortcut: favicon,
+    },
     verification: {
       ...(googleVerification ? { google: googleVerification } : {}),
       ...(Object.keys(other).length > 0 ? { other } : {}),
