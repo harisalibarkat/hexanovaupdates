@@ -29,7 +29,11 @@ export async function POST(req: NextRequest) {
   }
 
   const ext = (file.name.split(".").pop() ?? "png").toLowerCase();
-  const filename = type === "favicon" ? `favicon.${ext}` : `logo.${ext}`;
+  const filename =
+    type === "favicon"    ? `favicon.${ext}`    :
+    type === "logo-light" ? `logo-light.${ext}` :
+    type === "logo-dark"  ? `logo-dark.${ext}`  :
+                            `logo.${ext}`;
 
   try {
     // Write to file-uploads/ (outside public/) so Next.js dev-mode doesn't

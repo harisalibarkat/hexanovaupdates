@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 
 interface Props {
-  type: "logo" | "favicon";
+  type: "logo" | "logo-light" | "logo-dark" | "favicon";
   currentUrl?: string;
   onUploaded: (url: string) => void;
   label?: string;

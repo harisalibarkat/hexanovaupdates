@@ -451,11 +451,11 @@ export function SettingsForm({ settings }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className="text-xs font-medium text-muted-foreground block mb-2">Logo — Light Theme</label>
-                <LogoUploader type="logo" currentUrl={logoUrlLight} onUploaded={setLogoUrlLight} label="Light Logo" />
+                <LogoUploader type="logo-light" currentUrl={logoUrlLight} onUploaded={setLogoUrlLight} label="Light Logo" />
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground block mb-2">Logo — Dark Theme</label>
-                <LogoUploader type="logo" currentUrl={logoUrlDark} onUploaded={setLogoUrlDark} label="Dark Logo" />
+                <LogoUploader type="logo-dark" currentUrl={logoUrlDark} onUploaded={setLogoUrlDark} label="Dark Logo" />
               </div>
             </div>
             <div>
