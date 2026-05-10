@@ -5,7 +5,7 @@ import { CATEGORIES, categoryLabel } from "@/lib/utils";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { LogoFull } from "@/components/Logo";
 import { SearchBar } from "./SearchBar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 interface Props {
@@ -17,9 +17,19 @@ export function Header({ logoUrlLight, logoUrlDark }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const hasLight = !!logoUrlLight;
-  const hasDark  = !!logoUrlDark;
-  const hasEither = hasLight || hasDark;
+  // Track dark mode via MutationObserver so the logo updates whenever the
+  // DarkModeToggle adds/removes the .dark class from <html>.
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+
+  const hasEither = !!(logoUrlLight || logoUrlDark);
+  const activeLogo = isDark && logoUrlDark ? logoUrlDark : (logoUrlLight || logoUrlDark);
 
   return (
     <header className="sticky top-0 z-50">
@@ -29,29 +39,13 @@ export function Header({ logoUrlLight, logoUrlDark }: Props) {
           <div className="flex items-center justify-between h-16 gap-4">
             <Link href="/" className="flex-shrink-0 hover:opacity-80 transition-opacity">
               {hasEither ? (
-                /*
-                 * CSS-based logo switching: both images are always in the DOM.
-                 * dark:hidden / dark:block respond to the .dark class on <html>
-                 * which the DarkModeToggle adds/removes — no JS state needed.
-                 */
-                <>
-                  {/* Light-mode logo — visible by default, hidden when .dark */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={logoUrlLight || logoUrlDark}
-                    alt="Site logo"
-                    className={`h-10 w-auto object-contain${hasDark ? " dark:hidden" : ""}`}
-                  />
-                  {/* Dark-mode logo — hidden by default, visible when .dark */}
-                  {hasDark && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={logoUrlDark}
-                      alt="Site logo"
-                      className="h-10 w-auto object-contain hidden dark:block"
-                    />
-                  )}
-                </>
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={activeLogo}
+                  alt="Site logo"
+                  className="h-10 w-auto object-contain"
+                  suppressHydrationWarning
+                />
               ) : (
                 <LogoFull />
               )}

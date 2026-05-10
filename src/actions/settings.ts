@@ -71,5 +71,5 @@ export async function saveSettings(formData: FormData) {
   }
 
   revalidatePath("/admin/settings");
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // clears favicon/logo cache on every public page
 }
