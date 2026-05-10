@@ -13,10 +13,17 @@ interface Props {
   searchParams: Promise<{ page?: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { category } = await params;
   if (!CATEGORIES.includes(category as (typeof CATEGORIES)[number])) notFound();
-  return buildCategoryMetadata(category);
+  const { page } = await searchParams;
+  const pageNum = parseInt(page ?? "1", 10);
+  return {
+    ...buildCategoryMetadata(category),
+    // Pagination pages beyond page 1 are not worth indexing — canonical already
+    // points to /${category} (page 1) so link equity flows to the right place.
+    ...(pageNum > 1 ? { robots: { index: false, follow: true } } : {}),
+  };
 }
 
 export const dynamic = "force-dynamic";

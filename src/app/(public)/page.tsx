@@ -11,11 +11,24 @@ import type { Post } from "@/lib/db/schema";
 import { NewsletterBanner } from "@/components/public/NewsletterBanner";
 import { PageViewTracker } from "@/components/public/PageViewTracker";
 
-export const metadata: Metadata = {
-  title: "HexaNovaUpdates — Trending News & Updates",
-  description:
-    "AI-powered trending news across tech, celebrities, viral stories, finance, health, and travel.",
-};
+// generateMetadata must be async to read searchParams (required for noindex on ?letter= pages)
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ letter?: string }>;
+}): Promise<Metadata> {
+  const { letter } = await searchParams;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://hexanovaupdates.com";
+  return {
+    title: "HexaNovaUpdates — Trending News & Updates",
+    description:
+      "AI-powered trending news across tech, celebrities, viral stories, finance, health, and travel.",
+    // Always canonical to / — prevents /?letter=X from being treated as a separate page
+    alternates: { canonical: baseUrl },
+    // Noindex letter-filter pages — they are UI filters, not unique indexable content
+    ...(letter ? { robots: { index: false, follow: true } } : {}),
+  };
+}
 
 const CAT_BADGE: Record<string, string> = {
   tech:    "bg-blue-600/90 text-white",
