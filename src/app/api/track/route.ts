@@ -3,6 +3,34 @@ import { db } from "@/lib/db";
 import { pageViews } from "@/lib/db/schema";
 import { and, eq, gte } from "drizzle-orm";
 
+const PRIVATE_IP = /^(::1|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/;
+
+function extractIP(req: NextRequest): string | null {
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return req.headers.get("x-real-ip");
+}
+
+async function resolveCountry(req: NextRequest): Promise<string | null> {
+  // Vercel injects this for free — check it first (zero latency)
+  const vercelCountry = req.headers.get("x-vercel-ip-country");
+  if (vercelCountry && vercelCountry.length === 2) return vercelCountry.toUpperCase();
+
+  const ip = extractIP(req);
+  if (!ip || PRIVATE_IP.test(ip)) return null;
+
+  try {
+    const res = await fetch(`https://ipinfo.io/${ip}/country`, {
+      signal: AbortSignal.timeout(2000),
+    });
+    if (!res.ok) return null;
+    const code = (await res.text()).trim();
+    return code.length === 2 ? code.toUpperCase() : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as {
@@ -37,12 +65,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const country = await resolveCountry(req);
+
     await db.insert(pageViews).values({
       path,
       postId: postId ?? undefined,
       referrer: referrer ?? undefined,
       userAgent: userAgent ?? undefined,
       sessionId: sessionId ?? undefined,
+      country: country ?? undefined,
     });
 
     return NextResponse.json({ ok: true });
