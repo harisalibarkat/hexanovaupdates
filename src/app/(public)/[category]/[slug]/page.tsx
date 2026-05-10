@@ -76,7 +76,7 @@ export default async function ArticlePage({ params }: Props) {
     limit: 3,
   });
 
-  const breadcrumb = buildBreadcrumbSchema(category, post.title);
+  const breadcrumb = buildBreadcrumbSchema(category, post.title, slug);
   const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? "https://hexanovaupdates.com";
   const fullUrl    = `${appUrl}/${category}/${slug}`;
   const catBadge   = CAT_BADGE[category] ?? "bg-brand text-white";
