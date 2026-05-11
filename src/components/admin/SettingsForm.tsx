@@ -84,10 +84,32 @@ type TabId = typeof TABS[number]["id"];
 export function SettingsForm({ settings }: Props) {
   const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState<TabId>("site");
-  const [logoUrl, setLogoUrl] = useState(settings.logo_url ?? "");
+  const [logoUrl] = useState(settings.logo_url ?? "");
   const [logoUrlLight, setLogoUrlLight] = useState(settings.logo_url_light ?? "");
   const [logoUrlDark, setLogoUrlDark] = useState(settings.logo_url_dark ?? "");
   const [faviconUrl, setFaviconUrl] = useState(settings.favicon_url ?? "");
+  const [saveError, setSaveError] = useState("");
+
+  // Controlled toggle state — avoids uncontrolled-input drift where React's
+  // reconciliation after a server action may not update defaultChecked values,
+  // causing stale "true" to be re-submitted on the next save.
+  const [toggles, setToggles] = useState<Record<string, boolean>>({
+    ads_enabled:               settings.ads_enabled               !== "false",
+    auto_publish_enabled:      settings.auto_publish_enabled      !== "false",
+    trend_detection_enabled:   settings.trend_detection_enabled   !== "false",
+    rss_sync_enabled:          settings.rss_sync_enabled          !== "false",
+    ai_generation_enabled:     settings.ai_generation_enabled     !== "false",
+    seo_optimization_enabled:  settings.seo_optimization_enabled  === "true",
+    comments_enabled:          settings.comments_enabled          !== "false",
+    comments_moderation:       settings.comments_moderation       !== "false",
+    cookie_consent_enabled:    settings.cookie_consent_enabled    !== "false",
+    homepage_show_newsletter:  settings.homepage_show_newsletter  !== "false",
+    homepage_show_trending:    settings.homepage_show_trending    !== "false",
+    homepage_show_categories:  settings.homepage_show_categories  !== "false",
+    ai_content_disclosure:     settings.ai_content_disclosure     === "true",
+    noindex_search_pages:      settings.noindex_search_pages      === "true",
+  });
+  const toggle = (name: string) => setToggles((prev) => ({ ...prev, [name]: !prev[name] }));
 
   const initialGroqKeys = (() => {
     try {
@@ -99,10 +121,15 @@ export function SettingsForm({ settings }: Props) {
   const [saved, setSaved] = useState(false);
 
   function handleSubmit(fd: FormData) {
+    setSaveError("");
     startTransition(async () => {
-      await saveSettings(fd);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2500);
+      try {
+        await saveSettings(fd);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
+      } catch (err) {
+        setSaveError(err instanceof Error ? err.message : "Save failed — please try again.");
+      }
     });
   }
 
@@ -161,8 +188,8 @@ export function SettingsForm({ settings }: Props) {
         <div className={activeTab === "ai" ? "space-y-5" : "hidden"}>
           <TabSection title="AI & Content Generation">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Toggle name="rss_sync_enabled"      label="RSS Feed Syncing"    defaultChecked={settings.rss_sync_enabled      !== "false"} />
-              <Toggle name="ai_generation_enabled" label="AI Article Writing"  defaultChecked={settings.ai_generation_enabled !== "false"} />
+              <Toggle name="rss_sync_enabled"      label="RSS Feed Syncing"    checked={toggles.rss_sync_enabled}      onChange={() => toggle("rss_sync_enabled")} />
+              <Toggle name="ai_generation_enabled" label="AI Article Writing"  checked={toggles.ai_generation_enabled}     onChange={() => toggle("ai_generation_enabled")} />
             </div>
             <p className="text-xs text-muted-foreground">
               Disable RSS Feed Syncing to stop fetching new trends. Disable AI Article Writing to stop generating articles.
@@ -177,7 +204,8 @@ export function SettingsForm({ settings }: Props) {
             <Toggle
               name="noindex_search_pages"
               label="Noindex internal search result pages"
-              defaultChecked={settings.noindex_search_pages === "true"}
+              checked={toggles.noindex_search_pages}
+              onChange={() => toggle("noindex_search_pages")}
             />
             <p className="text-xs text-muted-foreground">
               Recommended: prevents thin search-result pages from diluting crawl budget.
@@ -192,7 +220,8 @@ export function SettingsForm({ settings }: Props) {
             <Toggle
               name="ai_content_disclosure"
               label='Show "AI-assisted content" badge on auto-generated articles'
-              defaultChecked={settings.ai_content_disclosure === "true"}
+              checked={toggles.ai_content_disclosure}
+              onChange={() => toggle("ai_content_disclosure")}
             />
             <p className="text-xs text-muted-foreground">
               Transparency with readers improves E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) — a Google ranking factor.
@@ -213,7 +242,8 @@ export function SettingsForm({ settings }: Props) {
             <Toggle
               name="seo_optimization_enabled"
               label="Enable background SEO optimization (cron job)"
-              defaultChecked={settings.seo_optimization_enabled === "true"}
+              checked={toggles.seo_optimization_enabled}
+              onChange={() => toggle("seo_optimization_enabled")}
             />
             <p className="text-xs text-muted-foreground">
               When enabled the cron job re-optimizes published articles. Uses Groq API credits.
@@ -271,8 +301,8 @@ export function SettingsForm({ settings }: Props) {
         <div className={activeTab === "automation" ? "space-y-5" : "hidden"}>
           <TabSection title="Automation">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Toggle name="auto_publish_enabled"    label="Auto-Publish Drafts" defaultChecked={settings.auto_publish_enabled    !== "false"} />
-              <Toggle name="trend_detection_enabled" label="Run Cron Jobs"        defaultChecked={settings.trend_detection_enabled !== "false"} />
+              <Toggle name="auto_publish_enabled"    label="Auto-Publish Drafts" checked={toggles.auto_publish_enabled}    onChange={() => toggle("auto_publish_enabled")} />
+              <Toggle name="trend_detection_enabled" label="Run Cron Jobs"        checked={toggles.trend_detection_enabled} onChange={() => toggle("trend_detection_enabled")} />
             </div>
             <Field name="max_posts_per_run" label="Max Articles per Cron Run" defaultValue={settings.max_posts_per_run ?? "5"}  type="number" />
             <Field name="posts_per_page"   label="Posts per Page"             defaultValue={settings.posts_per_page   ?? "12"} type="number" />
@@ -305,7 +335,7 @@ export function SettingsForm({ settings }: Props) {
 
         <div className={activeTab === "ads" ? "space-y-5" : "hidden"}>
           <TabSection title="Master Control">
-            <Toggle name="ads_enabled" label="Enable Ads (site-wide)" defaultChecked={settings.ads_enabled !== "false"} />
+            <Toggle name="ads_enabled" label="Enable Ads (site-wide)" checked={toggles.ads_enabled} onChange={() => toggle("ads_enabled")} />
             <p className="text-xs text-muted-foreground">
               When disabled, all ad zones are hidden across the entire site and the AdSense script does not load.
               When enabled, each zone shows a placeholder until its Slot ID is configured.
@@ -404,14 +434,14 @@ export function SettingsForm({ settings }: Props) {
 
         <div className={activeTab === "comments" ? "space-y-5" : "hidden"}>
           <TabSection title="Comments">
-            <Toggle name="comments_enabled"    label="Enable Comments"                            defaultChecked={settings.comments_enabled    !== "false"} />
-            <Toggle name="comments_moderation" label="Hold for moderation before publishing"      defaultChecked={settings.comments_moderation !== "false"} />
+            <Toggle name="comments_enabled"    label="Enable Comments"                       checked={toggles.comments_enabled}    onChange={() => toggle("comments_enabled")} />
+            <Toggle name="comments_moderation" label="Hold for moderation before publishing" checked={toggles.comments_moderation} onChange={() => toggle("comments_moderation")} />
             <Field  name="comments_max_per_page" label="Max Comments per Page"                   defaultValue={settings.comments_max_per_page ?? "20"} type="number" />
             <hr className="border-border" />
             <h3 className="text-sm font-semibold">Homepage Sections</h3>
-            <Toggle name="homepage_show_newsletter"  label="Show Newsletter Section" defaultChecked={settings.homepage_show_newsletter  !== "false"} />
-            <Toggle name="homepage_show_trending"    label="Show Trending Bar"        defaultChecked={settings.homepage_show_trending    !== "false"} />
-            <Toggle name="homepage_show_categories"  label="Show Category Sections"   defaultChecked={settings.homepage_show_categories  !== "false"} />
+            <Toggle name="homepage_show_newsletter"  label="Show Newsletter Section" checked={toggles.homepage_show_newsletter}  onChange={() => toggle("homepage_show_newsletter")} />
+            <Toggle name="homepage_show_trending"    label="Show Trending Bar"        checked={toggles.homepage_show_trending}    onChange={() => toggle("homepage_show_trending")} />
+            <Toggle name="homepage_show_categories"  label="Show Category Sections"   checked={toggles.homepage_show_categories}  onChange={() => toggle("homepage_show_categories")} />
           </TabSection>
         </div>
 
@@ -468,7 +498,7 @@ export function SettingsForm({ settings }: Props) {
               defaultValue={settings.cookie_consent_text ?? "We use cookies to enhance your experience."}
               type="textarea"
             />
-            <Toggle name="cookie_consent_enabled" label="Show Cookie Consent Banner" defaultChecked={settings.cookie_consent_enabled !== "false"} />
+            <Toggle name="cookie_consent_enabled" label="Show Cookie Consent Banner" checked={toggles.cookie_consent_enabled} onChange={() => toggle("cookie_consent_enabled")} />
           </TabSection>
         </div>
 
@@ -485,6 +515,9 @@ export function SettingsForm({ settings }: Props) {
             <span className="text-sm text-green-600 dark:text-green-400 font-medium animate-in fade-in slide-in-from-left-2">
               ✓ Saved
             </span>
+          )}
+          {saveError && (
+            <span className="text-sm text-destructive font-medium">{saveError}</span>
           )}
         </div>
       </div>
@@ -525,10 +558,10 @@ function Field({
   );
 }
 
-function Toggle({ name, label, defaultChecked }: { name: string; label: string; defaultChecked: boolean }) {
+function Toggle({ name, label, checked, onChange }: { name: string; label: string; checked: boolean; onChange: () => void }) {
   return (
     <label className="flex items-center gap-3 cursor-pointer py-1">
-      <input type="checkbox" name={name} defaultChecked={defaultChecked} value="true" className="w-4 h-4 accent-brand" />
+      <input type="checkbox" name={name} checked={checked} onChange={onChange} value="true" className="w-4 h-4 accent-brand" />
       <span className="text-sm font-medium">{label}</span>
     </label>
   );

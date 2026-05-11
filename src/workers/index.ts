@@ -11,7 +11,7 @@ import { sendNewsletterForPost } from "@/lib/email/newsletter";
 
 const connection = getRedis();
 
-async function getSetting(key: string, fallback = "true"): Promise<string> {
+async function getSetting(key: string, fallback = "false"): Promise<string> {
   const row = await db.query.settings.findFirst({ where: eq(settings.key, key) });
   return row?.value ?? fallback;
 }
@@ -22,20 +22,20 @@ const trendWorker = new Worker(
   async (job) => {
     console.log(`[trend-detection] job ${job.id} started`);
 
-    const trendDetEnabled = await getSetting("trend_detection_enabled", "true");
+    const trendDetEnabled = await getSetting("trend_detection_enabled", "false");
     if (trendDetEnabled === "false") {
       console.log("[trend-detection] skipped — trend_detection_enabled=false");
       return { skipped: true };
     }
 
     let newTrends = 0;
-    const rssSyncEnabled = await getSetting("rss_sync_enabled", "true");
+    const rssSyncEnabled = await getSetting("rss_sync_enabled", "false");
     if (rssSyncEnabled !== "false") {
       newTrends = await detectTrendsFromSources();
       console.log(`[trend-detection] found ${newTrends} new trends`);
     }
 
-    const aiGenEnabled = await getSetting("ai_generation_enabled", "true");
+    const aiGenEnabled = await getSetting("ai_generation_enabled", "false");
     if (aiGenEnabled === "false") {
       console.log("[trend-detection] skipping content queue — ai_generation_enabled=false");
       return { newTrends, queued: 0 };
@@ -62,7 +62,7 @@ const contentWorker = new Worker(
   async (job) => {
     const { trendId } = job.data as { trendId: string; category: string };
 
-    const aiGenEnabled = await getSetting("ai_generation_enabled", "true");
+    const aiGenEnabled = await getSetting("ai_generation_enabled", "false");
     if (aiGenEnabled === "false") {
       console.log(`[content-generation] skipped trend ${trendId} — ai_generation_enabled=false`);
       return { skipped: true };
@@ -82,7 +82,7 @@ const publishWorker = new Worker(
   async (job) => {
     console.log(`[publish] job ${job.id} started`);
 
-    const autoPublishEnabled = await getSetting("auto_publish_enabled", "true");
+    const autoPublishEnabled = await getSetting("auto_publish_enabled", "false");
     if (autoPublishEnabled === "false") {
       console.log("[publish] skipped — auto_publish_enabled=false");
       return { skipped: true };
