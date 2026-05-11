@@ -37,7 +37,7 @@ export async function GET(
   return new NextResponse(new Uint8Array(file), {
     headers: {
       "Content-Type": contentType,
-      "Cache-Control": "public, max-age=3600",
+      "Cache-Control": "public, max-age=31536000, immutable",
     },
   });
 }

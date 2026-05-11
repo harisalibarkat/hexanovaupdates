@@ -30,11 +30,12 @@ export function LogoUploader({ type, currentUrl, onUploaded, label }: Props) {
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await res.json() as { url?: string; error?: string };
       if (!res.ok || data.error) throw new Error(data.error ?? "Upload failed");
-      const cleanUrl = data.url!;
+      const versionedUrl = `${data.url!}?v=${Date.now()}`;
       setImgBroken(false);
-      // Cache-buster in preview only; stored URL stays clean so it stays valid after rebuilds
-      setPreview(`${cleanUrl}?v=${Date.now()}`);
-      onUploaded(cleanUrl);
+      setPreview(versionedUrl);
+      // Store with version so the <link rel="icon"> / <img src> URL changes on every
+      // upload, defeating browser caches that otherwise serve the old file for hours.
+      onUploaded(versionedUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
