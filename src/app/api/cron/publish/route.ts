@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { posts, settings } from "@/lib/db/schema";
 import { eq, and, lte } from "drizzle-orm";
 
-async function getSetting(key: string, fallback = "true"): Promise<string> {
+async function getSetting(key: string, fallback = "false"): Promise<string> {
   const row = await db.query.settings.findFirst({ where: eq(settings.key, key) });
   return row?.value ?? fallback;
 }
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const autoPublishEnabled = await getSetting("auto_publish_enabled", "true");
+    const autoPublishEnabled = await getSetting("auto_publish_enabled", "false");
     if (autoPublishEnabled === "false") {
       return NextResponse.json({ success: true, skipped: "auto_publish_disabled" });
     }

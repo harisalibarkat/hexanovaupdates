@@ -5,7 +5,7 @@ import { generateAndSavePost } from "@/lib/ai/content-generator";
 import { db } from "@/lib/db";
 import { posts, settings } from "@/lib/db/schema";
 import { eq, and, lte } from "drizzle-orm";
-import { scheduleTrendDetection, scheduleAutoPublish, addContentGenerationJob } from "@/lib/queue";
+import { scheduleTrendDetection, scheduleAutoPublish, addContentGenerationJob, syncQueuesWithSettings } from "@/lib/queue";
 import { trends } from "@/lib/db/schema";
 import { sendNewsletterForPost } from "@/lib/email/newsletter";
 
@@ -143,7 +143,27 @@ for (const worker of [trendWorker, contentWorker, publishWorker]) {
 
 // ─── Schedule recurring jobs on startup ──────────────────────────────────────
 (async () => {
+  console.log(`[worker] starting at ${new Date().toISOString()}`);
+
+  // Schedule the repeatable BullMQ jobs (idempotent — same pattern is deduped).
   await scheduleTrendDetection();
   await scheduleAutoPublish();
-  console.log("Workers started. Cron jobs scheduled.");
+
+  // Read current settings from DB and immediately apply pause/resume to each
+  // queue. This ensures that if the worker restarted while a setting was disabled,
+  // the queues are still paused and no jobs are processed.
+  const [ai, trend, publish] = await Promise.all([
+    getSetting("ai_generation_enabled",   "false"),
+    getSetting("trend_detection_enabled", "false"),
+    getSetting("auto_publish_enabled",    "false"),
+  ]);
+  console.log(`[worker] settings: ai_generation=${ai}  trend_detection=${trend}  auto_publish=${publish}`);
+
+  await syncQueuesWithSettings({
+    ai_generation_enabled:   ai,
+    trend_detection_enabled: trend,
+    auto_publish_enabled:    publish,
+  });
+
+  console.log("[worker] Workers started. Queue states synced with DB settings.");
 })();

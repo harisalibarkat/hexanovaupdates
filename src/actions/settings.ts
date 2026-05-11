@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { settings } from "@/lib/db/schema";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
+import { syncQueuesWithSettings } from "@/lib/queue";
 
 const ALLOWED_KEYS = new Set([
   "site_name", "site_tagline", "site_description",
@@ -68,6 +69,20 @@ export async function saveSettings(formData: FormData) {
         .values({ key, value: "false" })
         .onConflictDoUpdate({ target: settings.key, set: { value: "false", updatedAt: new Date() } });
     }
+  }
+
+  // Immediately pause/resume BullMQ queues to match the new settings.
+  // This is the most reliable mechanism — a paused queue cannot be dequeued
+  // by any worker regardless of what version of code it is running.
+  try {
+    await syncQueuesWithSettings({
+      ai_generation_enabled:   formData.has("ai_generation_enabled")   ? "true" : "false",
+      trend_detection_enabled: formData.has("trend_detection_enabled") ? "true" : "false",
+      auto_publish_enabled:    formData.has("auto_publish_enabled")    ? "true" : "false",
+    });
+  } catch (err) {
+    // Don't let a Redis hiccup block the DB save from being acknowledged.
+    console.error("[settings] Queue sync failed (settings were still saved to DB):", err);
   }
 
   revalidatePath("/admin/settings");

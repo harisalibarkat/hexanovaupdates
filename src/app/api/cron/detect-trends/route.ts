@@ -5,7 +5,7 @@ import { trends, settings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { addContentGenerationJob } from "@/lib/queue";
 
-async function getSetting(key: string, fallback = "true"): Promise<string> {
+async function getSetting(key: string, fallback = "false"): Promise<string> {
   const row = await db.query.settings.findFirst({ where: eq(settings.key, key) });
   return row?.value ?? fallback;
 }
@@ -17,9 +17,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const rssSyncEnabled   = await getSetting("rss_sync_enabled",    "true");
-    const aiGenEnabled     = await getSetting("ai_generation_enabled", "true");
-    const trendDetEnabled  = await getSetting("trend_detection_enabled", "true");
+    const rssSyncEnabled   = await getSetting("rss_sync_enabled",       "false");
+    const aiGenEnabled     = await getSetting("ai_generation_enabled",  "false");
+    const trendDetEnabled  = await getSetting("trend_detection_enabled","false");
     const maxPostsPerRun   = parseInt(await getSetting("max_posts_per_run", "5"), 10);
 
     if (trendDetEnabled === "false") {

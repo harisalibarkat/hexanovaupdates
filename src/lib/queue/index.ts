@@ -56,3 +56,26 @@ export async function addContentGenerationJob(trendId: string, category: string)
     backoff: { type: "exponential", delay: 5000 },
   });
 }
+
+/**
+ * Pause or resume each queue to match the saved settings.
+ * A paused BullMQ queue cannot be dequeued by any worker — this is the
+ * most reliable way to stop automation without relying on in-callback checks.
+ */
+export async function syncQueuesWithSettings(s: {
+  ai_generation_enabled?: string;
+  trend_detection_enabled?: string;
+  auto_publish_enabled?: string;
+}) {
+  await Promise.all([
+    s.ai_generation_enabled === "false"
+      ? contentQueue().pause()
+      : contentQueue().resume(),
+    s.trend_detection_enabled === "false"
+      ? trendQueue().pause()
+      : trendQueue().resume(),
+    s.auto_publish_enabled === "false"
+      ? publishQueue().pause()
+      : publishQueue().resume(),
+  ]);
+}
