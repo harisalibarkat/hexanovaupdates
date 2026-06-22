@@ -16,7 +16,6 @@ export async function GET() {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Read DB settings
   const rows = await db
     .select()
     .from(settings)
@@ -27,34 +26,9 @@ export async function GET() {
     dbSettings[row.key] = row.value;
   }
 
-  // Try to get BullMQ queue states (requires Redis)
-  let queueStates: Record<string, unknown> = { error: "Redis not checked" };
-  try {
-    const { Queue } = await import("bullmq");
-    const { getRedis } = await import("@/lib/redis");
-    const conn = getRedis();
-
-    const queueNames = ["trend-detection", "content-generation", "publish"];
-    queueStates = {};
-    for (const name of queueNames) {
-      const q = new Queue(name, { connection: conn });
-      const [isPaused, waiting, active] = await Promise.all([
-        q.isPaused(),
-        q.getWaitingCount(),
-        q.getActiveCount(),
-      ]);
-      queueStates[name] = { paused: isPaused, waiting, active };
-      await q.close();
-    }
-  } catch (err) {
-    queueStates = { error: String(err) };
-  }
-
   return NextResponse.json({
     dbSettings,
-    // Which keys are missing (will use fallback "false" in workers)
     missingKeys: AUTOMATION_KEYS.filter((k) => !(k in dbSettings)),
-    queueStates,
     timestamp: new Date().toISOString(),
   });
 }

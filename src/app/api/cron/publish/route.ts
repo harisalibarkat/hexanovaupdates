@@ -2,15 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { posts, settings } from "@/lib/db/schema";
 import { eq, and, lte } from "drizzle-orm";
+import { sendNewsletterForPost } from "@/lib/email/newsletter";
+
+export const maxDuration = 300;
 
 async function getSetting(key: string, fallback = "false"): Promise<string> {
   const row = await db.query.settings.findFirst({ where: eq(settings.key, key) });
   return row?.value ?? fallback;
 }
 
-export async function POST(req: NextRequest) {
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -42,6 +45,7 @@ export async function POST(req: NextRequest) {
         .set({ status: "published", publishedAt: new Date() })
         .where(eq(posts.id, post.id));
       published++;
+      sendNewsletterForPost(post.id).catch(console.error);
     }
 
     return NextResponse.json({ success: true, published });

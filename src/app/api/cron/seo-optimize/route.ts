@@ -4,19 +4,21 @@ import { posts, settings } from "@/lib/db/schema";
 import { eq, isNull, or, lt } from "drizzle-orm";
 import { optimizeAndSavePost } from "@/lib/ai/seo-optimizer";
 
+export const maxDuration = 300;
+
 async function getSetting(key: string, fallback: string): Promise<string> {
   const row = await db.query.settings.findFirst({ where: eq(settings.key, key) });
   return row?.value ?? fallback;
 }
 
-export async function POST(req: NextRequest) {
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const enabled      = await getSetting("seo_optimization_enabled", "false");
+    const enabled = await getSetting("seo_optimization_enabled", "false");
     if (enabled === "false") {
       return NextResponse.json({ success: true, skipped: "seo_optimization_disabled" });
     }

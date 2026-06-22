@@ -1,50 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { detectTrendsFromSources } from "@/lib/rss/parser";
 import { db } from "@/lib/db";
-import { trends, settings } from "@/lib/db/schema";
+import { settings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { addContentGenerationJob } from "@/lib/queue";
+
+export const maxDuration = 300;
 
 async function getSetting(key: string, fallback = "false"): Promise<string> {
   const row = await db.query.settings.findFirst({ where: eq(settings.key, key) });
   return row?.value ?? fallback;
 }
 
-export async function POST(req: NextRequest) {
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const rssSyncEnabled   = await getSetting("rss_sync_enabled",       "false");
-    const aiGenEnabled     = await getSetting("ai_generation_enabled",  "false");
-    const trendDetEnabled  = await getSetting("trend_detection_enabled","false");
-    const maxPostsPerRun   = parseInt(await getSetting("max_posts_per_run", "5"), 10);
-
+    const trendDetEnabled = await getSetting("trend_detection_enabled", "false");
     if (trendDetEnabled === "false") {
       return NextResponse.json({ success: true, skipped: "trend_detection_disabled" });
     }
 
     let newTrends = 0;
+    const rssSyncEnabled = await getSetting("rss_sync_enabled", "false");
     if (rssSyncEnabled !== "false") {
       newTrends = await detectTrendsFromSources();
     }
 
-    let queued = 0;
-    if (aiGenEnabled !== "false") {
-      const unprocessed = await db.query.trends.findMany({
-        where: eq(trends.isProcessed, false),
-        limit: maxPostsPerRun,
-      });
-
-      for (const trend of unprocessed) {
-        await addContentGenerationJob(trend.id, trend.category);
-        queued++;
-      }
-    }
-
-    return NextResponse.json({ success: true, newTrends, queued });
+    return NextResponse.json({ success: true, newTrends });
   } catch (err) {
     console.error("[cron/detect-trends]", err);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
