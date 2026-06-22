@@ -1,6 +1,5 @@
 import { auth } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/svg+xml", "image/webp", "image/x-icon"];
@@ -36,18 +35,15 @@ export async function POST(req: NextRequest) {
                             `logo.${ext}`;
 
   try {
-    // Write to file-uploads/ (outside public/) so Next.js dev-mode doesn't
-    // trigger a page refresh when the file lands, which would reset React state.
-    const uploadsDir = join(process.cwd(), "file-uploads");
-    await mkdir(uploadsDir, { recursive: true });
+    const blob = await put(filename, file, {
+      access: "public",
+      allowOverwrite: true,
+    });
 
-    const bytes = await file.arrayBuffer();
-    await writeFile(join(uploadsDir, filename), Buffer.from(bytes));
-
-    return NextResponse.json({ url: `/uploads/${filename}` });
+    return NextResponse.json({ url: blob.url });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Write failed";
-    console.error("[upload] Failed to save file:", msg);
-    return NextResponse.json({ error: `Could not save file: ${msg}` }, { status: 500 });
+    const msg = err instanceof Error ? err.message : "Upload failed";
+    console.error("[upload] Vercel Blob upload failed:", msg);
+    return NextResponse.json({ error: `Could not upload file: ${msg}` }, { status: 500 });
   }
 }
