@@ -228,7 +228,7 @@ export default async function ArticlePage({ params }: Props) {
             <Newsletter />
 
             {/* Comments */}
-            <CommentSection postId={post.id} />
+            {post.commentsEnabled !== false && <CommentSection postId={post.id} />}
 
             {/* Related articles */}
             {linkedPosts.length > 0 && (

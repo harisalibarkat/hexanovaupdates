@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition, useState } from "react";
+import Link from "next/link";
 import { loginAction } from "@/actions/auth";
 
 export function LoginForm() {
@@ -35,7 +36,12 @@ export function LoginForm() {
       </div>
 
       <div>
-        <label className="text-sm font-medium block mb-1.5">Password</label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-sm font-medium">Password</label>
+          <Link href="/login/forgot" className="text-xs text-muted-foreground hover:text-brand transition-colors">
+            Forgot password?
+          </Link>
+        </div>
         <input
           type="password"
           name="password"

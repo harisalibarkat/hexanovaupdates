@@ -206,6 +206,7 @@ const updatePostSchema = z.object({
   featuredImage: z.string().optional(),
   status: z.enum(["draft", "scheduled", "published", "failed"]),
   scheduledAt: z.date().optional().nullable(),
+  commentsEnabled: z.boolean().optional(),
 });
 
 export type UpdatePostData = z.infer<typeof updatePostSchema>;
@@ -251,6 +252,7 @@ export async function updatePost(postId: string, data: UpdatePostData): Promise<
           : existing.publishedAt,
       readingTime,
       structuredData,
+      commentsEnabled: parsed.commentsEnabled ?? true,
       updatedAt: new Date(),
     })
     .where(eq(posts.id, postId));

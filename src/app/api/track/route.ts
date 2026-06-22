@@ -5,6 +5,21 @@ import { and, eq, gte } from "drizzle-orm";
 
 const PRIVATE_IP = /^(::1|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/;
 
+// Allow max 60 track events per IP per minute (prevents flooding)
+const trackRateLimit = new Map<string, { count: number; resetAt: number }>();
+
+function checkTrackLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = trackRateLimit.get(ip);
+  if (!entry || now > entry.resetAt) {
+    trackRateLimit.set(ip, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (entry.count >= 60) return false;
+  entry.count++;
+  return true;
+}
+
 function extractIP(req: NextRequest): string | null {
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();
@@ -33,6 +48,11 @@ async function resolveCountry(req: NextRequest): Promise<string | null> {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = extractIP(req);
+    if (ip && !PRIVATE_IP.test(ip) && !checkTrackLimit(ip)) {
+      return NextResponse.json({ ok: true });
+    }
+
     const body = (await req.json()) as {
       path?: string;
       postId?: string;

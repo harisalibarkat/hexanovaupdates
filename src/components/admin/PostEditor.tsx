@@ -200,6 +200,7 @@ export function PostEditor({ post }: Props) {
   const [scheduledAt, setScheduledAt] = useState<string>(
     post.scheduledAt ? new Date(post.scheduledAt).toISOString().slice(0, 16) : ""
   );
+  const [commentsEnabled, setCommentsEnabled] = useState(post.commentsEnabled ?? true);
 
   const [banner, setBanner] = useState<{ msg: string; type: BannerType } | null>(null);
   const [slugDirty, setSlugDirty] = useState(false);
@@ -231,8 +232,8 @@ export function PostEditor({ post }: Props) {
       keywords,
       featuredImage: featuredImage || undefined,
       status: overrideStatus ?? status,
-      scheduledAt:
-        scheduledAt ? new Date(scheduledAt) : null,
+      scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+      commentsEnabled,
     };
   }
 
@@ -546,6 +547,31 @@ export function PostEditor({ post }: Props) {
                 className={inputCls}
                 placeholder={`/${post.category}/${slug}`}
               />
+            </div>
+
+            {/* Comments toggle */}
+            <div className="flex items-center justify-between py-1">
+              <div>
+                <p className={labelCls}>Allow Comments</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Readers can leave comments on this post
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={commentsEnabled}
+                onClick={() => setCommentsEnabled(!commentsEnabled)}
+                className={`relative w-10 h-5 rounded-full transition-colors ${
+                  commentsEnabled ? "bg-brand" : "bg-border"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                    commentsEnabled ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
             </div>
 
             {/* SEO Score */}

@@ -1,11 +1,15 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { comments, settings } from "@/lib/db/schema";
+import { comments, settings, posts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+
+function stripHtml(str: string): string {
+  return str.replace(/<[^>]*>/g, "").replace(/&(?:#\d+|[a-z]+);/gi, " ").trim();
+}
 
 // ─── Public: Submit a comment ─────────────────────────────────────────────────
 
@@ -14,9 +18,9 @@ export async function submitComment(
 ): Promise<{ success: boolean; message: string }> {
   try {
     const postId = formData.get("postId") as string | null;
-    const authorName = (formData.get("authorName") as string | null)?.trim() ?? "";
-    const authorEmail = (formData.get("authorEmail") as string | null)?.trim() ?? "";
-    const content = (formData.get("content") as string | null)?.trim() ?? "";
+    const authorName = stripHtml((formData.get("authorName") as string | null)?.trim() ?? "");
+    const authorEmail = ((formData.get("authorEmail") as string | null)?.trim() ?? "").toLowerCase();
+    const content = stripHtml((formData.get("content") as string | null)?.trim() ?? "");
 
     // Validate postId
     if (!postId) {
@@ -42,15 +46,24 @@ export async function submitComment(
       return { success: false, message: "Comment must not exceed 2000 characters." };
     }
 
-    // Check if comments are enabled
+    // Check global comments setting
     const commentsEnabledSetting = await db.query.settings.findFirst({
       where: eq(settings.key, "comments_enabled"),
     });
-    const commentsEnabled =
+    const globalEnabled =
       commentsEnabledSetting === undefined || commentsEnabledSetting.value !== "false";
 
-    if (!commentsEnabled) {
+    if (!globalEnabled) {
       return { success: false, message: "Comments are currently disabled." };
+    }
+
+    // Check per-post comments setting
+    const post = await db.query.posts.findFirst({
+      where: eq(posts.id, postId),
+      columns: { commentsEnabled: true },
+    });
+    if (post && post.commentsEnabled === false) {
+      return { success: false, message: "Comments are disabled for this post." };
     }
 
     // Get IP address
