@@ -31,12 +31,12 @@ export async function generateMetadata({
 }
 
 const CAT_BADGE: Record<string, string> = {
-  tech:    "bg-blue-600/90 text-white",
-  celebs:  "bg-pink-600/90 text-white",
-  viral:   "bg-orange-500/90 text-white",
-  finance: "bg-emerald-600/90 text-white",
-  health:  "bg-green-600/90 text-white",
-  travel:  "bg-cyan-600/90 text-white",
+  tech:    "bg-blue-500 text-white",
+  celebs:  "bg-pink-500 text-white",
+  viral:   "bg-orange-500 text-white",
+  finance: "bg-emerald-500 text-white",
+  health:  "bg-green-500 text-white",
+  travel:  "bg-cyan-500 text-white",
 };
 const CAT_TICKER: Record<string, string> = {
   tech:    "bg-blue-500/20 text-blue-300",
@@ -45,6 +45,22 @@ const CAT_TICKER: Record<string, string> = {
   finance: "bg-emerald-500/20 text-emerald-300",
   health:  "bg-green-500/20 text-green-300",
   travel:  "bg-cyan-500/20 text-cyan-300",
+};
+const CAT_SECTION_COLOR: Record<string, string> = {
+  tech:    "text-blue-500",
+  celebs:  "text-pink-500",
+  viral:   "text-orange-500",
+  finance: "text-emerald-500",
+  health:  "text-green-500",
+  travel:  "text-cyan-500",
+};
+const CAT_BAR_COLOR: Record<string, string> = {
+  tech:    "bg-blue-500",
+  celebs:  "bg-pink-500",
+  viral:   "bg-orange-500",
+  finance: "bg-emerald-500",
+  health:  "bg-green-500",
+  travel:  "bg-cyan-500",
 };
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -102,10 +118,10 @@ export default async function HomePage({
     <>
       {/* ── A. LIVE Breaking News Ticker ─────────────────────────────────── */}
       <div className="bg-zinc-950 text-white overflow-hidden border-b border-zinc-800/80">
-        <div className="flex items-stretch">
-          <div className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-red-600 border-r border-white/10">
-            <span className="w-2 h-2 rounded-full bg-white live-dot" />
-            <span className="text-[10px] font-black uppercase tracking-[0.18em] whitespace-nowrap">Live</span>
+        <div className="flex items-stretch h-10">
+          <div className="flex-shrink-0 flex items-center gap-2 px-4 bg-black border-r border-white/10">
+            <span className="w-2 h-2 rounded-full bg-red-500 live-dot flex-shrink-0" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap text-white">Live</span>
           </div>
           <div className="flex-1 overflow-hidden flex items-center fade-edges">
             <div className="flex animate-ticker whitespace-nowrap">
@@ -115,11 +131,11 @@ export default async function HomePage({
                   href={`/${p.category}/${p.slug}`}
                   className="inline-flex items-center gap-2.5 px-5 py-2.5 text-sm hover:bg-white/5 transition-colors flex-shrink-0"
                 >
-                  <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-sm ${CAT_TICKER[p.category] ?? "bg-white/10 text-white/70"}`}>
+                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 ${CAT_TICKER[p.category] ?? "bg-white/10 text-white/70"}`}>
                     {categoryLabel(p.category)}
                   </span>
                   <span className="text-zinc-200 font-medium">{p.title}</span>
-                  <span className="text-zinc-700 mx-1">·</span>
+                  <span className="text-zinc-700 mx-2">·</span>
                 </Link>
               ))}
             </div>
@@ -286,13 +302,15 @@ export default async function HomePage({
           if (catPosts.length === 0) return null;
           const bigPost   = catPosts[0];
           const miniPosts = catPosts.slice(1, 3);
+          const catTextColor = CAT_SECTION_COLOR[cat] ?? "text-foreground";
+          const catBarColor  = CAT_BAR_COLOR[cat]     ?? "bg-foreground";
 
           return (
             <section key={cat}>
               <div className="flex items-end justify-between mb-7 pb-4 border-b border-border">
                 <div>
-                  <h2 className="section-title text-2xl sm:text-3xl">{categoryLabel(cat)}</h2>
-                  <span className="section-bar" />
+                  <h2 className={`section-title text-2xl sm:text-3xl ${catTextColor}`}>{categoryLabel(cat)}</h2>
+                  <span className={`block w-10 h-0.5 mt-2 ${catBarColor}`} />
                 </div>
                 <Link
                   href={`/${cat}`}
@@ -319,9 +337,12 @@ export default async function HomePage({
                       </span>
                     </Link>
                     <div className="p-5">
-                      <span className="cat-label text-brand text-[10px] mb-2 block">{categoryLabel(bigPost.category)}</span>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`w-2 h-2 flex-shrink-0 ${catBarColor}`} />
+                        <span className={`cat-label text-[10px] ${catTextColor}`}>{categoryLabel(bigPost.category)}</span>
+                      </div>
                       <Link href={`/${bigPost.category}/${bigPost.slug}`}>
-                        <h3 className="font-bold text-lg leading-snug mb-2 line-clamp-2 group-hover:text-brand transition-colors">{bigPost.title}</h3>
+                        <h3 className="font-bold text-lg leading-snug mb-2 line-clamp-2 group-hover:underline underline-offset-2 transition-colors">{bigPost.title}</h3>
                       </Link>
                       <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{bigPost.excerpt}</p>
                       <Link href={`/${bigPost.category}/${bigPost.slug}`} className="btn-read-more">
@@ -350,9 +371,9 @@ export default async function HomePage({
                           )}
                         </Link>
                         <div className="flex-1 min-w-0">
-                          <span className="cat-label text-brand text-[9px] mb-1 block">{categoryLabel(p.category)}</span>
+                          <span className={`cat-label text-[9px] mb-1 block ${catTextColor}`}>{categoryLabel(p.category)}</span>
                           <Link href={href}>
-                            <h3 className="text-sm font-bold leading-snug line-clamp-2 group-hover:text-brand transition-colors">{p.title}</h3>
+                            <h3 className="text-sm font-bold leading-snug line-clamp-2 group-hover:underline underline-offset-1 transition-colors">{p.title}</h3>
                           </Link>
                           {p.publishedAt && (
                             <time className="text-xs text-muted-foreground mt-1 block">{formatDate(p.publishedAt)}</time>

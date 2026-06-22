@@ -3,6 +3,24 @@ import Image from "next/image";
 import { formatDate, categoryLabel } from "@/lib/utils";
 import type { Post } from "@/lib/db/schema";
 
+const CAT_COLOR_TEXT: Record<string, string> = {
+  tech:    "text-blue-500",
+  celebs:  "text-pink-500",
+  viral:   "text-orange-500",
+  finance: "text-emerald-500",
+  health:  "text-green-500",
+  travel:  "text-cyan-500",
+};
+
+const CAT_COLOR_BG: Record<string, string> = {
+  tech:    "bg-blue-500",
+  celebs:  "bg-pink-500",
+  viral:   "bg-orange-500",
+  finance: "bg-emerald-500",
+  health:  "bg-green-500",
+  travel:  "bg-cyan-500",
+};
+
 const CAT_PLACEHOLDER: Record<string, string> = {
   tech:    "from-blue-500/20 to-blue-900/40",
   celebs:  "from-pink-500/20 to-pink-900/40",
@@ -18,15 +36,17 @@ interface Props {
 }
 
 export function ArticleCard({ article, featured = false }: Props) {
-  const phGrad = CAT_PLACEHOLDER[article.category] ?? "from-brand/20 to-brand/40";
-  const href   = `/${article.category}/${article.slug}`;
+  const phGrad   = CAT_PLACEHOLDER[article.category] ?? "from-zinc-500/20 to-zinc-900/40";
+  const catText  = CAT_COLOR_TEXT[article.category]  ?? "text-foreground";
+  const catDot   = CAT_COLOR_BG[article.category]    ?? "bg-foreground";
+  const href     = `/${article.category}/${article.slug}`;
 
   return (
-    <article className={`group bg-card border border-border overflow-hidden card-hover ${featured ? "lg:col-span-2" : ""}`}>
+    <article className={`group flex flex-col overflow-hidden border border-border bg-card transition-all duration-300 hover:shadow-md hover:-translate-y-1 ${featured ? "lg:col-span-2" : ""}`}>
       {/* Image */}
       <Link
         href={href}
-        className={`block relative overflow-hidden ${featured ? "aspect-[16/7]" : "aspect-video"} bg-muted`}
+        className={`block relative overflow-hidden bg-muted ${featured ? "aspect-[16/7]" : "aspect-[4/3]"}`}
       >
         {article.featuredImage ? (
           <Image
@@ -42,64 +62,55 @@ export function ArticleCard({ article, featured = false }: Props) {
           />
         ) : (
           <div className={`absolute inset-0 bg-gradient-to-br ${phGrad} flex items-center justify-center`}>
-            <span className="text-7xl font-black opacity-10 text-white select-none">
+            <span className="text-6xl font-black opacity-10 text-white select-none">
               {categoryLabel(article.category).slice(0, 1)}
             </span>
           </div>
         )}
 
-        {/* Date badge on image top edge */}
-        {article.publishedAt && (
-          <span className="absolute top-0 left-4 date-badge">
-            {formatDate(article.publishedAt)}
-          </span>
-        )}
-
         {/* Reading time pill */}
         {article.readingTime && (
-          <span className="absolute bottom-3 right-3 text-[10px] font-semibold px-2 py-1 bg-black/50 text-white/90 backdrop-blur-sm flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-            {article.readingTime} min
+          <span className="absolute bottom-3 right-3 text-[10px] font-semibold px-2 py-1 bg-black/60 text-white/90 backdrop-blur-sm">
+            {article.readingTime} min read
           </span>
         )}
       </Link>
 
       {/* Content */}
-      <div className={`p-5 ${featured ? "lg:p-6" : ""}`}>
-        {/* Category label */}
-        <div className="mb-3">
-          <Link href={`/${article.category}`} className="cat-label text-brand hover:opacity-70 transition-opacity">
+      <div className={`p-5 flex flex-col flex-1 ${featured ? "lg:p-6" : ""}`}>
+        {/* Category */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className={`w-2 h-2 flex-shrink-0 ${catDot}`} />
+          <Link
+            href={`/${article.category}`}
+            className={`cat-label ${catText} hover:opacity-70 transition-opacity`}
+          >
             {categoryLabel(article.category)}
           </Link>
         </div>
 
-        {/* Title — Playfair Display via h2 base styles */}
+        {/* Title */}
         <h2
-          className={`font-bold leading-tight mb-4 group-hover:text-brand transition-colors duration-200 ${
+          className={`font-bold leading-tight mb-3 group-hover:underline underline-offset-2 transition-colors duration-200 ${
             featured ? "text-xl sm:text-2xl line-clamp-3" : "text-base sm:text-lg line-clamp-2"
           }`}
         >
           <Link href={href}>{article.title}</Link>
         </h2>
 
-        {/* Excerpt (featured only) */}
-        {featured && article.excerpt && (
-          <p className="text-sm text-muted-foreground leading-relaxed mb-5 line-clamp-2">
+        {/* Excerpt (featured or if available) */}
+        {article.excerpt && (
+          <p className={`text-sm text-muted-foreground leading-relaxed mb-4 ${featured ? "line-clamp-2" : "line-clamp-2 hidden sm:block"}`}>
             {article.excerpt}
           </p>
         )}
 
-        {/* Divider */}
-        <div className="border-t border-border/50 pt-4">
-          <Link href={href} className="btn-read-more">
-            Read More
-            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </Link>
-        </div>
+        {/* Date */}
+        {article.publishedAt && (
+          <time className="text-xs text-muted-foreground mt-auto pt-3 border-t border-border/50">
+            {formatDate(article.publishedAt)}
+          </time>
+        )}
       </div>
     </article>
   );

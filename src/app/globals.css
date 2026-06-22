@@ -5,37 +5,37 @@
 
 @theme {
   /* ── Light mode ─────────────────────────────────────── */
-  --color-background:          #ffffff;
-  --color-foreground:          #111111;
+  --color-background:          #fcf9f8;
+  --color-foreground:          #1c1b1b;
   --color-card:                #ffffff;
-  --color-card-foreground:     #111111;
+  --color-card-foreground:     #1c1b1b;
   --color-popover:             #ffffff;
-  --color-popover-foreground:  #111111;
-  --color-primary:             #1a1a1a;
+  --color-popover-foreground:  #1c1b1b;
+  --color-primary:             #000000;
   --color-primary-foreground:  #ffffff;
-  --color-secondary:           #f5f5f5;
-  --color-secondary-foreground:#1a1a1a;
-  --color-muted:               #f8f8f8;
-  --color-muted-foreground:    #666666;
-  --color-accent:              #f5f5f5;
-  --color-accent-foreground:   #1a1a1a;
-  --color-destructive:         oklch(0.577 0.245 27.325);
-  --color-border:              #e8e8e8;
-  --color-input:               #e8e8e8;
-  --color-ring:                #1a1a1a;
+  --color-secondary:           #f6f3f2;
+  --color-secondary-foreground:#1c1b1b;
+  --color-muted:               #f6f3f2;
+  --color-muted-foreground:    #444748;
+  --color-accent:              #f0edec;
+  --color-accent-foreground:   #1c1b1b;
+  --color-destructive:         #ba1a1a;
+  --color-border:              #c4c7c7;
+  --color-input:               #c4c7c7;
+  --color-ring:                #000000;
 
-  /* ── Brand (editorial charcoal) ─────────────────────── */
-  --color-brand:               #1a1a1a;
+  /* ── Brand (editorial black) ─────────────────────────── */
+  --color-brand:               #000000;
   --color-brand-foreground:    #ffffff;
-  --color-brand-muted:         #f0f0f0;
+  --color-brand-muted:         #f0edec;
 
-  /* ── Category accent colors ─────────────────────────── */
-  --color-cat-tech:    oklch(0.55 0.22 260);
-  --color-cat-celebs:  oklch(0.60 0.22 340);
-  --color-cat-viral:   oklch(0.62 0.22 35);
-  --color-cat-finance: oklch(0.52 0.18 145);
-  --color-cat-health:  oklch(0.58 0.20 160);
-  --color-cat-travel:  oklch(0.58 0.18 210);
+  /* ── Category accent colors (Stitch exact values) ───── */
+  --color-cat-tech:    #3B82F6;
+  --color-cat-celebs:  #EC4899;
+  --color-cat-viral:   #F97316;
+  --color-cat-finance: #10B981;
+  --color-cat-health:  #22C55E;
+  --color-cat-travel:  #06B6D4;
 
   /* ── Radii ──────────────────────────────────────────── */
   --radius-sm: 0.25rem;
@@ -64,7 +64,7 @@
   --color-muted-foreground:    #888888;
   --color-accent:              #2a2a2a;
   --color-accent-foreground:   #f0f0f0;
-  --color-destructive:         oklch(0.65 0.22 27);
+  --color-destructive:         #ba1a1a;
   --color-border:              #2e2e2e;
   --color-input:               #2e2e2e;
   --color-ring:                #f0f0f0;
@@ -275,15 +275,28 @@
   }
   .prose-content a:hover { opacity: 0.7; }
   .prose-content blockquote {
+    position: relative;
     border-left: 4px solid var(--color-brand);
-    padding: 1rem 1.5rem;
-    margin: 1.75rem 0;
+    padding: 2rem 2rem 2rem 2.5rem;
+    margin: 2rem 0;
     background: var(--color-muted);
     font-style: italic;
     font-family: var(--font-serif);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    line-height: 1.6;
   }
-  .prose-content blockquote p { margin-bottom: 0; color: var(--color-muted-foreground); }
+  .prose-content blockquote::before {
+    content: '\201C';
+    position: absolute;
+    top: -12px;
+    left: -6px;
+    font-family: var(--font-serif);
+    font-size: 72px;
+    line-height: 1;
+    opacity: 0.1;
+    color: var(--color-brand);
+  }
+  .prose-content blockquote p { margin-bottom: 0; color: var(--color-foreground); }
   .prose-content strong { font-weight: 700; }
   .prose-content code {
     font-size: 0.875em;
@@ -421,4 +434,58 @@
   .cat-finance { --cat-color: var(--color-cat-finance); }
   .cat-health  { --cat-color: var(--color-cat-health); }
   .cat-travel  { --cat-color: var(--color-cat-travel); }
+
+  /* ── Article body drop cap ──────────────────────────────── */
+  .article-body > p:first-of-type::first-letter {
+    font-family: var(--font-serif);
+    font-size: 5rem;
+    font-weight: 700;
+    line-height: 0.8;
+    float: left;
+    margin-right: 0.1em;
+    margin-top: 0.05em;
+    color: var(--color-primary);
+  }
+
+  /* ── Pull quote (Stitch article design) ─────────────────── */
+  .pull-quote {
+    position: relative;
+    padding: 2.5rem 2rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    background: var(--color-muted);
+  }
+  .pull-quote::before {
+    content: '\201C';
+    position: absolute;
+    top: -16px;
+    left: -8px;
+    font-family: var(--font-serif);
+    font-size: 80px;
+    line-height: 1;
+    opacity: 0.12;
+    color: currentColor;
+  }
+
+  /* ── Editorial rule divider (list item separator) ───────── */
+  .editorial-rule {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1.5rem;
+  }
+
+  /* ── Category color text helpers ────────────────────────── */
+  .text-cat-tech    { color: var(--color-cat-tech); }
+  .text-cat-celebs  { color: var(--color-cat-celebs); }
+  .text-cat-viral   { color: var(--color-cat-viral); }
+  .text-cat-finance { color: var(--color-cat-finance); }
+  .text-cat-health  { color: var(--color-cat-health); }
+  .text-cat-travel  { color: var(--color-cat-travel); }
+
+  /* ── Category color bg helpers ──────────────────────────── */
+  .bg-cat-tech    { background-color: var(--color-cat-tech); }
+  .bg-cat-celebs  { background-color: var(--color-cat-celebs); }
+  .bg-cat-viral   { background-color: var(--color-cat-viral); }
+  .bg-cat-finance { background-color: var(--color-cat-finance); }
+  .bg-cat-health  { background-color: var(--color-cat-health); }
+  .bg-cat-travel  { background-color: var(--color-cat-travel); }
 }

@@ -28,38 +28,30 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
 export const dynamic = "force-dynamic";
 
-/* Category theme maps */
-const CAT_BG: Record<string, string> = {
-  tech:    "from-blue-950/60 to-zinc-950",
-  celebs:  "from-pink-950/60 to-zinc-950",
-  viral:   "from-orange-950/60 to-zinc-950",
-  finance: "from-emerald-950/60 to-zinc-950",
-  health:  "from-green-950/60 to-zinc-950",
-  travel:  "from-cyan-950/60 to-zinc-950",
-};
-const CAT_ACCENT: Record<string, string> = {
+/* Category theme maps — Stitch exact values */
+const CAT_BANNER_BG: Record<string, string> = {
   tech:    "bg-blue-500",
   celebs:  "bg-pink-500",
-  viral:   "bg-orange-400",
+  viral:   "bg-orange-500",
   finance: "bg-emerald-500",
   health:  "bg-green-500",
   travel:  "bg-cyan-500",
 };
 const CAT_TEXT: Record<string, string> = {
-  tech:    "text-blue-400",
-  celebs:  "text-pink-400",
-  viral:   "text-orange-400",
-  finance: "text-emerald-400",
-  health:  "text-green-400",
-  travel:  "text-cyan-400",
+  tech:    "text-blue-500",
+  celebs:  "text-pink-500",
+  viral:   "text-orange-500",
+  finance: "text-emerald-500",
+  health:  "text-green-500",
+  travel:  "text-cyan-500",
 };
-const CAT_EMOJI: Record<string, string> = {
-  tech:    "💻",
-  celebs:  "⭐",
-  viral:   "🔥",
-  finance: "📈",
-  health:  "💪",
-  travel:  "✈️",
+const CAT_DESC: Record<string, string> = {
+  tech:    "The bleeding edge of silicon, software, and human ingenuity.",
+  celebs:  "Stars, style, and the stories behind the spotlight.",
+  viral:   "The internet's most shared, debated, and talked-about moments.",
+  finance: "Markets, money, and the forces shaping global economies.",
+  health:  "Science-backed insights for a longer, stronger life.",
+  travel:  "Destinations, adventures, and the world through fresh eyes.",
 };
 
 export default async function CategoryPage({ params, searchParams }: Props) {
@@ -88,23 +80,23 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   const [featuredArticle, ...restArticles] = articles;
 
-  const bgGrad   = CAT_BG[category]    ?? "from-brand/20 to-zinc-950";
-  const accent   = CAT_ACCENT[category] ?? "bg-brand";
-  const textColor = CAT_TEXT[category]  ?? "text-brand";
-  const emoji    = CAT_EMOJI[category]  ?? "📰";
+  const bannerBg  = CAT_BANNER_BG[category] ?? "bg-brand";
+  const textColor = CAT_TEXT[category]      ?? "text-brand";
+  const catDesc   = CAT_DESC[category]      ?? `Latest trending stories in ${label.toLowerCase()}.`;
 
   return (
     <div>
-      {/* Category hero banner */}
-      <div className={`bg-gradient-to-b ${bgGrad} border-b border-border/50`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8">
-          <span className={`cat-label text-xs mb-3 block ${textColor}`}>{emoji} Category</span>
-          <h1 className="section-title text-3xl sm:text-4xl text-foreground">
-            {label} News
+      {/* Category hero banner — Stitch solid color with large italic name */}
+      <div className={`${bannerBg} text-white overflow-hidden`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-16 py-16 md:py-24 relative">
+          <span className="cat-label text-white/70 uppercase mb-4 block tracking-widest">
+            Vertical Hub
+          </span>
+          <h1 className="font-bold italic leading-none text-[56px] sm:text-[80px] md:text-[100px] mb-4 tracking-tight">
+            {label}
           </h1>
-          <span className={`section-bar ${accent}`} />
-          <p className="text-muted-foreground mt-4 text-sm">
-            Latest trending stories and updates in {label.toLowerCase()}
+          <p className="text-white/80 text-lg max-w-lg leading-relaxed">
+            {catDesc}
           </p>
         </div>
       </div>
@@ -113,7 +105,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
         {articles.length === 0 ? (
           <div className="text-center py-24 text-muted-foreground">
-            <div className="text-6xl mb-5">{emoji}</div>
+            <div className={`text-6xl font-black mb-5 ${textColor} opacity-20`}>{label.slice(0, 1)}</div>
             <p className="text-xl font-bold mb-2">No {label} articles yet</p>
             <p className="text-sm">Check back soon — new content is generated every 30 minutes.</p>
           </div>

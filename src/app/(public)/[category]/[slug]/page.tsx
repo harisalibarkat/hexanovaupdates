@@ -5,7 +5,7 @@ import Image from "next/image";
 import { db } from "@/lib/db";
 import { posts, internalLinks, settings } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { CATEGORIES, formatDate } from "@/lib/utils";
+import { CATEGORIES, formatDate, categoryLabel } from "@/lib/utils";
 import { buildPostMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbSchema } from "@/lib/seo/structured-data";
 import { AdSlot } from "@/components/ads/AdSlot";
@@ -43,12 +43,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const CAT_BADGE: Record<string, string> = {
-  tech:    "bg-blue-600 text-white",
-  celebs:  "bg-pink-600 text-white",
+  tech:    "bg-blue-500 text-white",
+  celebs:  "bg-pink-500 text-white",
   viral:   "bg-orange-500 text-white",
-  finance: "bg-emerald-600 text-white",
-  health:  "bg-green-600 text-white",
-  travel:  "bg-cyan-600 text-white",
+  finance: "bg-emerald-500 text-white",
+  health:  "bg-green-500 text-white",
+  travel:  "bg-cyan-500 text-white",
+};
+const CAT_TEXT: Record<string, string> = {
+  tech:    "text-blue-500",
+  celebs:  "text-pink-500",
+  viral:   "text-orange-500",
+  finance: "text-emerald-500",
+  health:  "text-green-500",
+  travel:  "text-cyan-500",
 };
 
 export default async function ArticlePage({ params }: Props) {
@@ -80,6 +88,7 @@ export default async function ArticlePage({ params }: Props) {
   const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? "https://hexanovaupdates.com";
   const fullUrl    = `${appUrl}/${category}/${slug}`;
   const catBadge   = CAT_BADGE[category] ?? "bg-brand text-white";
+  const catText    = CAT_TEXT[category]  ?? "text-brand";
 
   return (
     <>
@@ -101,13 +110,15 @@ export default async function ArticlePage({ params }: Props) {
           <article className="lg:col-span-2 min-w-0">
 
             {/* Breadcrumbs */}
-            <nav className="text-xs text-muted-foreground mb-6 flex items-center gap-1.5 flex-wrap">
-              <Link href="/" className="hover:text-foreground transition-colors font-medium">Home</Link>
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <nav className="text-xs text-muted-foreground mb-6 flex items-center gap-1.5 flex-wrap cat-label">
+              <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m9 18 6-6-6-6"/>
               </svg>
-              <Link href={`/${category}`} className="hover:text-foreground capitalize transition-colors font-medium">{category}</Link>
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <Link href={`/${category}`} className={`transition-colors font-bold ${catText}`}>
+                {categoryLabel(category)}
+              </Link>
+              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m9 18 6-6-6-6"/>
               </svg>
               <span className="text-foreground line-clamp-1">
@@ -117,7 +128,7 @@ export default async function ArticlePage({ params }: Props) {
 
             {/* Category badge */}
             <span className={`inline-block text-[10px] font-black px-3 py-1.5 uppercase tracking-widest mb-5 ${catBadge}`}>
-              {category}
+              {categoryLabel(category)}
             </span>
 
             {/* Title */}
@@ -190,7 +201,7 @@ export default async function ArticlePage({ params }: Props) {
 
             {/* Article body */}
             <div
-              className="prose-content text-foreground leading-relaxed"
+              className="prose-content text-foreground leading-relaxed article-body"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
