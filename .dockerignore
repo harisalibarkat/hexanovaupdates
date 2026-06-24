@@ -6,7 +6,6 @@
 .env.*.local
 .next
 node_modules
-tsconfig.tsbuildinfo
 npm-debug.log*
 railway_backup.dump
 stitch-design.html
