@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
-import { put } from "@vercel/blob";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/svg+xml", "image/webp", "image/x-icon"];
@@ -35,15 +36,16 @@ export async function POST(req: NextRequest) {
                             `logo.${ext}`;
 
   try {
-    const blob = await put(filename, file, {
-      access: "public",
-      addRandomSuffix: false,
-    });
+    const uploadDir = join(process.cwd(), "public", "uploads");
+    await mkdir(uploadDir, { recursive: true });
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await writeFile(join(uploadDir, filename), buffer);
 
-    return NextResponse.json({ url: blob.url });
+    const url = `${process.env.NEXT_PUBLIC_APP_URL}/uploads/${filename}`;
+    return NextResponse.json({ url });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Upload failed";
-    console.error("[upload] Vercel Blob upload failed:", msg);
+    console.error("[upload] File upload failed:", msg);
     return NextResponse.json({ error: `Could not upload file: ${msg}` }, { status: 500 });
   }
 }
