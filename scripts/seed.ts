@@ -43,12 +43,14 @@ async function seed() {
   console.log("Seeding database...");
 
   // Create admin user
-  const hashedPassword = await bcrypt.hash("admin123456", 12);
+  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@example.com";
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "admin123456";
+  const hashedPassword = await bcrypt.hash(adminPassword, 12);
   await db
     .insert(users)
     .values({
       name: "Admin",
-      email: "harisali709@gmail.com",
+      email: adminEmail,
       password: hashedPassword,
       role: "admin",
     })
@@ -56,7 +58,7 @@ async function seed() {
       target: users.email,
       set: { password: hashedPassword, updatedAt: new Date() },
     });
-  console.log("✓ Admin user created (harisali709@gmail.com / admin123456)");
+  console.log(`✓ Admin user created (${adminEmail})`);
 
   // Insert RSS sources
   for (const source of RSS_SOURCES) {

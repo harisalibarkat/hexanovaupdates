@@ -68,7 +68,7 @@ echo ============================================
 echo.
 echo   App:    http://localhost:3000
 echo   Admin:  http://localhost:3000/admin
-echo   Login:  harisali709@gmail.com / admin123456
+echo   Login:  (use ADMIN_EMAIL / ADMIN_PASSWORD from your .env.local)
 echo.
 echo   Logs:   docker compose logs -f
 echo   Stop:   docker compose down
